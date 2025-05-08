@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="node_modules/@tbc-ai-kit/app/dist/tbc-ai-app.js"></script>
+  </head>
+  <body>
+    <div>这是示例</div>
+    <div id="app"></div>
+    <script>
+      console.log('hello world', window.__TBC_AI_APP)
+      const TbcAiApp = window.__TBC_AI_APP
+      new TbcAiApp.default({
+        target: '#app'
+      })
+    </script>
+  </body>
+</html>

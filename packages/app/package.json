@@ -1,0 +1,48 @@
+{
+  "name": "@tbc-ai-kit/app",
+  "version": "0.1.0",
+  "main": "tbc-ai-app.js",
+  "private": true,
+  "scripts": {
+    "dev": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "vue": "catalog:"
+  },
+  "devDependencies": {
+    "@babel/core": "catalog:",
+    "@babel/eslint-parser": "catalog:",
+    "@vue/cli-plugin-babel": "catalog:",
+    "@vue/cli-plugin-eslint": "catalog:",
+    "@vue/cli-service": "catalog:",
+    "axios": "catalog:",
+    "core-js": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-vue": "catalog:",
+    "install": "catalog:",
+    "less": "catalog:",
+    "less-loader": "catalog:",
+    "svg-sprite-loader": "catalog:",
+    "vue-template-compiler": "catalog:"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

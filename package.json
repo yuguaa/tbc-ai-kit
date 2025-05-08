@@ -1,0 +1,20 @@
+{
+  "name": "tbc-ai-kit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "pnpm -r run stub --if-present",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "preview": "turbo run preview",
+    "build:preview": "turbo run build:preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.8.0",
+  "devDependencies": {
+    "turbo": "catalog:"
+  }
+}

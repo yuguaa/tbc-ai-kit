@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon_背景色</title>
+    <g id="icon_背景色" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M11.8903199,3.07415751 L12.0598171,9.68454851 L5.44942609,9.85404572 L5.27992888,3.24365472 L11.8903199,3.07415751 Z" id="矩形" stroke="#000000" stroke-width="1.19" transform="translate(8.669873, 6.464102) rotate(-330.000000) translate(-8.669873, -6.464102) "></path>
+        <path d="M7.51716742,9.37401775 L7.5176753,10.336113 L4.7118564,11.960904 L4.7118564,9.37401775 L7.51716742,9.37401775 Z" id="形状结合" stroke="#000000" stroke-width="1.19" fill="#000000" transform="translate(6.114856, 10.886018) rotate(-330.000000) translate(-6.114856, -10.886018) "></path>
+        <path d="M2.2,12.81 L11.8,12.81 C11.9104569,12.81 12,12.8995431 12,13.01 L12,13.8 C12,13.9104569 11.9104569,14 11.8,14 L2.2,14 C2.08954305,14 2,13.9104569 2,13.8 L2,13.01 C2,12.8995431 2.08954305,12.81 2.2,12.81 Z" id="矩形" fill="currentColor"></path>
+    </g>
+</svg>

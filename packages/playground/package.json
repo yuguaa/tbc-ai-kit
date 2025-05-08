@@ -1,0 +1,17 @@
+{
+  "name": "@tbc-ai-kit/playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "preview": "vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.8.0",
+  "devDependencies": {
+    "vite": "catalog:",
+    "@tbc-ai-kit/app": "workspace:*"
+  }
+}

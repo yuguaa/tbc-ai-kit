@@ -1,0 +1,22 @@
+packages:
+  - packages/*
+
+catalog:
+  vite: ^6.2.1
+  turbo: ^2.4.4
+  vue: ^2.6.14
+  axios: ^1.7.7
+  core-js: ^3.38.1
+  eslint: ^7.32.0
+  eslint-plugin-vue: ^8.0.3
+  install: ^0.13.0
+  less: ^4.2.0
+  less-loader: ^12.2.0
+  svg-sprite-loader: ^6.0.11
+  vue-template-compiler: ^2.6.14
+  "@babel/core": ^7.12.16
+  "@babel/eslint-parser": ^7.12.16
+  "@vue/cli-plugin-babel": ~5.0.0
+  "@vue/cli-plugin-eslint": ~5.0.0
+  "@vue/cli-service": ~5.0.0
+  
