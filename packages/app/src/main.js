@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import '@/icons'
-
+import '@/styles/tailwindcss.css'
 Vue.config.productionTip = false
 
 class TbcAiApp {

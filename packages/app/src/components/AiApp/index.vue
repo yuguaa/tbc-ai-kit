@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="y-p-4 y-flex y-flex-col y-items-center y-justify-center y-h-screen">
     sss
   </div>
 </template>
