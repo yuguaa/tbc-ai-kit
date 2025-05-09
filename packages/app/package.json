@@ -9,6 +9,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@21tb/tbc-sse": "catalog:",
+    "markdown-it": "catalog:",
+    "markdown-it-emoji": "catalog:",
     "vue": "catalog:"
   },
   "devDependencies": {
