@@ -28,7 +28,6 @@ const md = new MarkdownIt({
 // 添加自定义解析规则
 md.core.ruler.push('think', function (state) {
   const tokens = state.tokens
-  console.log(`🚀 ~ tokens:`, tokens)
   const thinkTokens = []
   let insideThink = false
   let content = ''

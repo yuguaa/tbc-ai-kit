@@ -1,6 +1,6 @@
 <template>
   <div class="y-p-4 y-flex y-flex-col y-items-center y-justify-center y-h-screen">
-    <button class="y-fixed" @click="send">发送</button>
+    <button class="y-fixed y-top-10 y-right-10 y-shadow" @click="send">发送</button>
     <MarkdownRender :content="html" />
   </div>
 </template>
@@ -28,7 +28,6 @@ export default {
     tbcSSE.subscribe('onmessage', event => {
       const parsedData = JSON.parse(event.event.data)
       this.html += parsedData.answer
-      console.log(`🚀 ~ this.html:`, JSON.stringify(this.html))
     })
     tbcSSE.subscribe('onend', event => {
       console.log('[SSE END]', event)
