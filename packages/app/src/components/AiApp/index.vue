@@ -1,7 +1,7 @@
 <template>
   <div class="y-p-4 y-flex y-flex-col y-items-center y-justify-center y-h-screen">
-    <button @click="send">发送</button>
-    <MarkdownRender :source="html" />
+    <button class="y-fixed" @click="send">发送</button>
+    <MarkdownRender :content="html" />
   </div>
 </template>
 
@@ -22,11 +22,13 @@ export default {
   },
   mounted() {
     tbcSSE.subscribe('onopen', event => {
+      this.html += '\n\n' // 这里处理是因为think标签会被tokenize到上次尾token的child节点中
       console.log('[SSE OPEN]', event)
     })
     tbcSSE.subscribe('onmessage', event => {
       const parsedData = JSON.parse(event.event.data)
       this.html += parsedData.answer
+      console.log(`🚀 ~ this.html:`, JSON.stringify(this.html))
     })
     tbcSSE.subscribe('onend', event => {
       console.log('[SSE END]', event)
@@ -45,11 +47,11 @@ export default {
         params: {
           convId: '',
           boxType: 'TC_042',
-          types: 'SPARK',
-          sendMsg: '请分享一个关于个人信息保护的真实案例。',
+          types: 'LOCAL',
+          sendMsg: '请分享一个关于个人信息保护的真实案例。给我一些tdolist',
           resourceType: 'live',
           resourceId: '3151677c82f14f149de9956e6149406b',
-          elnSessionId: 'elnSessionId.b01116e9ba28445c8ad4a91a2dfe0b58'
+          elnSessionId: 'elnSessionId.bd773a3e38fe4ee1ac22065b91c5f356'
         },
         timeout: 180000
       })

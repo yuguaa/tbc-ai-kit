@@ -10,8 +10,16 @@
   },
   "dependencies": {
     "@21tb/tbc-sse": "catalog:",
+    "github-markdown-css": "catalog:",
     "markdown-it": "catalog:",
+    "markdown-it-abbr": "catalog:",
+    "markdown-it-deflist": "catalog:",
     "markdown-it-emoji": "catalog:",
+    "markdown-it-footnote": "catalog:",
+    "markdown-it-ins": "catalog:",
+    "markdown-it-mark": "catalog:",
+    "markdown-it-task-lists": "catalog:",
+    "markdown-it-toc-done-right": "catalog:",
     "vue": "catalog:"
   },
   "devDependencies": {
@@ -30,11 +38,11 @@
     "less": "catalog:",
     "less-loader": "catalog:",
     "postcss": "catalog:",
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "catalog:",
     "svg-sprite-loader": "catalog:",
     "tailwind-merge": "catalog:",
     "tailwindcss": "catalog:",
-    "prettier": "catalog:",
-    "prettier-plugin-tailwindcss": "catalog:",
     "vue-template-compiler": "catalog:"
   },
   "eslintConfig": {

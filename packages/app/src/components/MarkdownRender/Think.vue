@@ -1,25 +1,14 @@
 <template>
-  <div v-if="status !== 'UN_START'">
-    <div class="y-flex y-items-center">
-      <div>
-        <span v-if="status === 'THINKING'">思考中...</span>
-        <span v-else-if="status === 'THINK_END'">思考结束</span>
-      </div>
-      <div
-        @click="isCollapsed = !isCollapsed"
-        class="y-cursor-pointer y-text-blue-500 y-text-sm y-ml-2 y-p-1 y-border y-border-blue-500 y-rounded-md"
-      >
+  <div class="think-block">
+    <div class="think-header">
+      <span>{{ status }}</span>
+      <button class="toggle-btn" @click="toggle">
         {{ isCollapsed ? '展开' : '折叠' }}
-      </div>
+      </button>
     </div>
-    <div
-      :class="{
-        'y-h-4': isCollapsed,
-        'y-h-auto': !isCollapsed,
-        'y-overflow-hidden': isCollapsed
-      }"
-      v-html="content"
-    ></div>
+    <div :class="{ 'y-h-50 y-overflow-hidden': isCollapsed }">
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -29,10 +18,6 @@ export default {
   props: {
     status: {
       type: String,
-      default: 'UN_START'
-    },
-    content: {
-      type: String,
       default: ''
     }
   },
@@ -40,8 +25,11 @@ export default {
     return {
       isCollapsed: false
     }
+  },
+  methods: {
+    toggle() {
+      this.isCollapsed = !this.isCollapsed
+    }
   }
 }
 </script>
-
-<style scoped></style>

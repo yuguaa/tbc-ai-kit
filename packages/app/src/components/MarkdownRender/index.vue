@@ -1,96 +1,126 @@
-<template>
-  <div class="markdown-body">
-    <think :status="thinkStatus" :content="thinkContent" />
-    <div v-html="renderedHtml"></div>
-  </div>
-</template>
-
 <script>
-import MarkdownIt from 'markdown-it'
-import { full as emoji } from 'markdown-it-emoji'
 import Think from './Think.vue'
+import md from '@/utils/md'
+
 export default {
-  name: 'MarkdownRender',
+  name: 'MdRenderer',
   components: {
     Think
   },
   props: {
-    source: {
+    content: {
       type: String,
       required: true
     }
   },
-  data() {
-    return {
-      md: null,
-      thinkStatus: 'UN_START',
-      thinkContent: '',
-      mainContent: ''
-    }
-  },
   computed: {
-    renderedHtml() {
-      return this.md.render(this.mainContent)
+    tokens() {
+      return md.parse(this.content, {})
     }
   },
-  watch: {
-    source(val) {
-      if (val.includes('<think>')) {
-        this.thinkStatus = 'THINKING'
-        if (val.includes('</think>')) {
-          this.thinkStatus = 'THINK_END'
-          const temp = val.substring(val.indexOf('<think>') + 7, val.indexOf('</think>'))
-          this.thinkContent = this.md.render(temp)
-          this.mainContent = val.substring(val.indexOf('</think>') + 8)
-        }
-        if (!val.includes('</think>')) {
-          this.thinkStatus = 'THINKING'
-          const temp = val.substring(val.indexOf('<think>') + 7)
-          this.thinkContent = this.md.render(temp)
-        }
-      } else {
-        this.mainContent = val
+  methods: {
+    renderTokens(h, tokens, keyPrefix = '') {
+      const result = []
+      const stack = []
+      const tagMap = {
+        paragraph_open: 'p',
+        heading_open: 'h1',
+        bullet_list_open: 'ul',
+        ordered_list_open: 'ol',
+        list_item_open: 'li',
+        image: 'img',
+        link_open: 'a',
+        code_inline: 'code',
+        strong_open: 'strong',
+        em_open: 'em',
+        del_open: 'del',
+        blockquote_open: 'blockquote',
+        table_open: 'table',
+        thead_open: 'thead',
+        tbody_open: 'tbody',
+        tr_open: 'tr',
+        th_open: 'th',
+        td_open: 'td',
+        hr: 'hr',
+        fence: 'pre',
+        hardbreak: 'br',
+        inline: 'span',
+        text: 'span',
+        think: Think // 处理 think 标签
       }
+      for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i]
+        // 处理 think 标签
+        if (token.type === 'think') {
+          const vnode = h(
+            Think,
+            {
+              class: 'think-inline',
+              props: {
+                status: token.meta?.status || 'UN_START'
+              }
+            },
+            this.renderTokens(h, md.parse(token.content, {}), `${keyPrefix}-think`)
+          )
+          result.push(vnode)
+        } else if (/_open$/.test(token.type)) {
+          stack.push({ token, children: [] })
+        } else if (/_close$/.test(token.type)) {
+          const { token: openToken, children } = stack.pop()
+          const tag = openToken.tag || tagMap[openToken.type] || 'div'
+          const attrs = {}
+
+          if (openToken.attrs) {
+            openToken.attrs.forEach(([k, v]) => (attrs[k] = v))
+          }
+
+          const vnode = h(tag, { key: `${keyPrefix}-${i}`, attrs }, children)
+
+          if (stack.length) {
+            stack[stack.length - 1].children.push(vnode)
+          } else {
+            result.push(vnode)
+          }
+        } else if (token.type === 'inline') {
+          const children = this.renderTokens(h, token.children || [], `${keyPrefix}-inline-${i}`)
+          const span = h('span', { key: `${keyPrefix}-inline-${i}` }, children)
+          if (stack.length) {
+            stack[stack.length - 1].children.push(span)
+          } else {
+            result.push(span)
+          }
+        } else if (token.type === 'text') {
+          const vnode = token.content
+          if (stack.length) {
+            stack[stack.length - 1].children.push(vnode)
+          } else {
+            result.push(vnode)
+          }
+        } else {
+          const tag = token.tag || tagMap[token.type] || 'span'
+          const attrs = {}
+
+          if (token.attrs) {
+            token.attrs.forEach(([k, v]) => (attrs[k] = v))
+          }
+
+          const vnode = h(tag, { key: `${keyPrefix}-${i}`, attrs }, token.content || [])
+          if (stack.length) {
+            stack[stack.length - 1].children.push(vnode)
+          } else {
+            result.push(vnode)
+          }
+        }
+      }
+      return result
     }
   },
-  created() {
-    this.md = new MarkdownIt({
-      linkify: true,
-      typographer: true,
-      html: true
-    }).use(emoji)
+  render(h) {
+    return h('div', { class: 'markdown-body y-text-[14px]' }, this.renderTokens(h, this.tokens))
   }
 }
 </script>
 
-<style lang="less" scoped>
-.markdown-body {
-  box-sizing: border-box;
-  font-size: 14px;
-  background-color: transparent;
-
-  /* stylelint-disable */
-  think {
-    position: relative;
-    padding-left: 8px;
-    display: block;
-    color: #8b8b8b;
-    font-size: 12px;
-
-    &::before {
-      content: ' ';
-      display: block;
-      height: calc(100% - 8px);
-      margin-top: 4px;
-      width: 1.5px;
-      background: #e5e5e5;
-      position: absolute;
-      left: 0;
-    }
-  }
-}
-
-.markdown-body pre {
-  overflow: auto;
-}
+<style scoped>
+@import 'github-markdown-css/github-markdown.css';
 </style>

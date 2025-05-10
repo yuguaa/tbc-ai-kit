@@ -54,6 +54,13 @@ module.exports = defineConfig({
         }
       }
     }
+
+    // 合并所有 CSS 到一个文件
+    config.plugins.push(
+      new webpack.optimize.LimitChunkCountPlugin({
+        maxChunks: 1 // 限制 chunk 数量为 1
+      })
+    )
   },
   // 添加 CSS 配置
   css: {
