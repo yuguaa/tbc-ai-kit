@@ -14,8 +14,9 @@
     </div>
     <div
       :class="{
-        'y-h-[100px]': isCollapsed,
-        'y-h-[auto]': !isCollapsed
+        'y-h-4': isCollapsed,
+        'y-h-auto': !isCollapsed,
+        'y-overflow-hidden': isCollapsed
       }"
       v-html="content"
     ></div>

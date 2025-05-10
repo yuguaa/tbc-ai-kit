@@ -33,6 +33,8 @@
     "svg-sprite-loader": "catalog:",
     "tailwind-merge": "catalog:",
     "tailwindcss": "catalog:",
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "catalog:",
     "vue-template-compiler": "catalog:"
   },
   "eslintConfig": {

@@ -14,17 +14,19 @@ catalog:
   less-loader: ^12.2.0
   svg-sprite-loader: ^6.0.11
   vue-template-compiler: ^2.6.14
-  autoprefixer: ^9.8.8
-  postcss: ^7.0.39
+  autoprefixer: ^10.4.16
+  prettier: ^3.2.2
+  prettier-plugin-tailwindcss: ^0.5.11
+  postcss: ^8.4.33
   clsx: ^2.1.1
-  "markdown-it": ^14.1.0
-  "markdown-it-emoji": ^3.0.0
+  tailwindcss: ^3.4.1
+  tailwind-merge: ^3.2.0
+  markdown-it: ^14.1.0
+  markdown-it-emoji: ^3.0.0
   "@babel/core": ^7.12.16
   "@babel/eslint-parser": ^7.12.16
   "@vue/cli-plugin-babel": ~5.0.0
   "@vue/cli-plugin-eslint": ~5.0.0
   "@vue/cli-service": ~5.0.0
-  "tailwind-merge": ^3.2.0
-  "tailwindcss": npm:@tailwindcss/postcss7-compat@^2.2.17
   "@21tb/tbc-sse": ^0.0.5
   

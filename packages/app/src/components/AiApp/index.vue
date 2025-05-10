@@ -49,7 +49,7 @@ export default {
           sendMsg: '请分享一个关于个人信息保护的真实案例。',
           resourceType: 'live',
           resourceId: '3151677c82f14f149de9956e6149406b',
-          elnSessionId: 'elnSessionId.0c88211a611d44838258ad109b7c60d8'
+          elnSessionId: 'elnSessionId.b01116e9ba28445c8ad4a91a2dfe0b58'
         },
         timeout: 180000
       })
