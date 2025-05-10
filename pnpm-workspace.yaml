@@ -31,6 +31,7 @@ catalog:
   markdown-it-mark: ^4.0.0
   markdown-it-task-lists: ^2.1.1
   markdown-it-toc-done-right: ^4.2.0
+  markdown-it-link-attributes: ^4.0.1
   "@babel/core": ^7.12.16
   "@babel/eslint-parser": ^7.12.16
   "@vue/cli-plugin-babel": ~5.0.0

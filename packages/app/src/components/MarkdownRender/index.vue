@@ -50,7 +50,27 @@ export default {
       }
       for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
-        // 处理 think 标签
+        if (token.type === 'link_open') {
+          const linkTokens = []
+          let j = i
+          while (j < tokens.length) {
+            linkTokens.push(tokens[j])
+            if (tokens[j].type === 'link_close') break
+            j++
+          }
+          const html = md.renderer.render(linkTokens, md.options, {})
+          const vnode = h('span', {
+            key: `${keyPrefix}-link-${i}`,
+            domProps: { innerHTML: html }
+          })
+          if (stack.length) {
+            stack[stack.length - 1].children.push(vnode)
+          } else {
+            result.push(vnode)
+          }
+          i = j // 跳过处理过的 link token
+          continue
+        }
         if (token.type === 'think') {
           const vnode = h(
             Think,
@@ -73,7 +93,11 @@ export default {
           if (openToken.attrs) {
             openToken.attrs.forEach(([k, v]) => (attrs[k] = v))
           }
-
+          // // 特殊处理 link_open
+          // if (openToken.type === 'link_open') {
+          //   attrs.target = '_blank'
+          //   attrs.rel = 'noopener noreferrer'
+          // }
           const vnode = h(tag, { key: `${keyPrefix}-${i}`, attrs }, children)
 
           if (stack.length) {
@@ -83,11 +107,10 @@ export default {
           }
         } else if (token.type === 'inline') {
           const children = this.renderTokens(h, token.children || [], `${keyPrefix}-inline-${i}`)
-          const span = h('span', { key: `${keyPrefix}-inline-${i}` }, children)
           if (stack.length) {
-            stack[stack.length - 1].children.push(span)
+            stack[stack.length - 1].children.push(...children)
           } else {
-            result.push(span)
+            result.push(...children)
           }
         } else if (token.type === 'text') {
           const vnode = token.content
@@ -103,7 +126,6 @@ export default {
           if (token.attrs) {
             token.attrs.forEach(([k, v]) => (attrs[k] = v))
           }
-
           const vnode = h(tag, { key: `${keyPrefix}-${i}`, attrs }, token.content || [])
           if (stack.length) {
             stack[stack.length - 1].children.push(vnode)

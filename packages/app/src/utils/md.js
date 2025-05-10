@@ -7,7 +7,7 @@ import markdownItIns from 'markdown-it-ins'
 import markdownItMark from 'markdown-it-mark'
 import markdownItTaskLists from 'markdown-it-task-lists'
 import markdownItToc from 'markdown-it-toc-done-right'
-
+import mila from 'markdown-it-link-attributes'
 const md = new MarkdownIt({
   html: true,
   xhtmlOut: true,
@@ -24,7 +24,15 @@ const md = new MarkdownIt({
   .use(markdownItMark)
   .use(markdownItToc)
   .use(markdownItTaskLists, { enabled: true })
-
+  .use(mila, {
+    matcher(href) {
+      return href.startsWith('https:')
+    },
+    attrs: {
+      target: '_blank',
+      rel: 'noopener noreferrer'
+    }
+  })
 // 添加自定义解析规则
 md.core.ruler.push('think', function (state) {
   const tokens = state.tokens

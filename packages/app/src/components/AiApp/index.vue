@@ -36,6 +36,7 @@ export default {
       console.error('[SSE ERROR]', event)
     })
     tbcSSE.subscribe('onfinally', event => {
+      console.log('[SSE FINALLY]', JSON.stringify(this.html))
       console.log('[SSE FINALLY]', event)
     })
   },
@@ -44,13 +45,14 @@ export default {
       tbcSSE.sendSSE({
         url: 'https://test-gpt.21tb.com/gpt/chat/sendMsgSteam',
         params: {
+          sendMsg: '要求给出markdown链接外连接,http和https都要,并且大概100万字文章',
+          sessionId: '87658c4a-055f-4c48-b401-ec6d327f54d7',
+          types: 'SPARK',
+          resourceType: '',
+          resourceId: '',
           convId: '',
-          boxType: 'TC_042',
-          types: 'LOCAL',
-          sendMsg: '请分享一个关于个人信息保护的真实案例。给我一些tdolist',
-          resourceType: 'live',
-          resourceId: '3151677c82f14f149de9956e6149406b',
-          elnSessionId: 'elnSessionId.bd773a3e38fe4ee1ac22065b91c5f356'
+          boxType: 'AT_004',
+          elnSessionId: 'elnSessionId.805b506f55584fbc8689ec97720df3c5'
         },
         timeout: 180000
       })
