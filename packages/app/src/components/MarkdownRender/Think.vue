@@ -1,7 +1,7 @@
 <template>
   <div class="y-mt-2 y-p-2 y-border y-border-red-300 y-rounded-md y-border-solid y-bg-red-50">
     <div class="y-flex y-items-center y-justify-between">
-      <h3 class="y-text-lg y-font-bold">Think vue comp</h3>
+      <h3 class="y-text-lg y-font-bold">Think vue comp  {{ status }}</h3>
       <div class="y-text-sm y-bg-red-200 y-cursor-pointer y-p-2 y-rounded-sm" @click="toggle">
         {{ isCollapsed ? '展开' : '折叠' }}
       </div>

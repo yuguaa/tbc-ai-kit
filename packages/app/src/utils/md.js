@@ -26,7 +26,7 @@ const md = new MarkdownIt({
   .use(markdownItTaskLists, { enabled: true })
   .use(mila, {
     matcher(href) {
-      return href.startsWith('https:')
+      return href.startsWith('https:') || href.startsWith('http:')
     },
     attrs: {
       target: '_blank',
