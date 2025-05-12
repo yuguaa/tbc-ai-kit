@@ -5,18 +5,21 @@ import '@/styles/tailwindcss.css'
 Vue.config.productionTip = false
 
 class TbcAiApp {
-  constructor({ target, ...rest }) {
+  constructor({ target, config }) {
+    // 是否有target,没有添加到body子元素上
+    if (!target) {
+      const app = document.createElement('div')
+      app.id = '__TBC_AI_APP_DOM' // 可选：设置 ID
+      document.body.appendChild(app)
+      target = '#__TBC_AI_APP_DOM'
+    }
     new Vue({
-      render: h =>
+      render: (h) =>
         h(App, {
           props: {
-            ...rest,
-            config: {
-              ...rest?.config,
-              __mounted: rest?.mounted
-            }
-          }
-        })
+            config,
+          },
+        }),
     }).$mount(target)
   }
 }
@@ -27,8 +30,8 @@ if (process.env.NODE_ENV === 'development') {
     config: {
       __mounted: () => {
         console.log('TbcAiApp mounted')
-      }
-    }
+      },
+    },
   })
 }
 

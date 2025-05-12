@@ -27,9 +27,6 @@ export default {
   data() {
     return {}
   },
-  mounted() {
-    console.log(this.$slots)
-  },
   methods: {
     handleClick() {
       if (this.type === 'select') {
