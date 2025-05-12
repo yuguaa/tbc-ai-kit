@@ -11,23 +11,21 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#1888ff',
-        gp: {
-          content: '#D8E3F6',
-          main: '#133f9e',
-          sub: '#EDF1F8',
-          cur: '#ED726E',
-          dash: '#FF6969',
-          dMain: '#1990FF',
-          dSub: '#1DD5D6',
-          dCur: '#3054EB'
-        }
-      }
+        main: '#1159FF',
+        second: '#E8F3FF',
+        to: '#2D8CFF',
+        mainText: '#262626',
+        secondText: '#595959',
+        thirdText: '#8C8C8C',
+        borderDark: '#D9D9D9',
+        borderLight: '#F0F0F0',
+        limit: '#BFBFBF',
+      },
     },
     spacing: {
       1: '1px',
-      ...spacingsSettings
-    }
+      ...spacingsSettings,
+    },
   },
   plugins: [
     plugin(function ({ addBase, addUtilities }) {
@@ -41,18 +39,29 @@ module.exports = {
       addUtilities({
         '.scrollbar-common': {
           '&::-webkit-scrollbar-track-piece': {
-            background: '#d3dce6'
+            background: '#d3dce6',
           },
           '&::-webkit-scrollbar': {
             width: '6px',
-            height: '6px'
+            height: '6px',
           },
           '&::-webkit-scrollbar-thumb': {
             background: '#99a9bf',
-            'border-radius': '20px'
-          }
-        }
+            'border-radius': '20px',
+          },
+        },
       })
-    })
-  ]
+      addUtilities(
+        {
+          '.before\\:content-placeholder': {
+            content: 'attr(data-placeholder)',
+          },
+          '.before\\:content-empty': {
+            content: "''",
+          },
+        },
+        ['before'],
+      )
+    }),
+  ],
 }

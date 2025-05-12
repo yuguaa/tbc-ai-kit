@@ -7,15 +7,15 @@
 
 <script>
 export default {
-  name: "SvgIcon",
+  name: 'SvgIcon',
   props: {
-    name: {
+    iconClass: {
       type: String,
       required: true,
     },
     className: {
       type: String,
-      default: "",
+      default: '',
     },
     size: {
       type: String,
@@ -23,40 +23,41 @@ export default {
     },
     wrapStyle: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   computed: {
     isExternal() {
-      return /^(https?:|mailto:|tel:)/.test(this.iconClass);
+      return /^(https?:|mailto:|tel:)/.test(this.iconClass)
     },
     iconName() {
-      return `#icon-${this.name}`;
+      return `#icon-${this.iconClass}`
     },
     svgClass() {
-      const baseClass = "tbc-ai-app-icon-svg ";
+      const baseClass = 'tbc-ai-app-icon-svg '
       if (this.className) {
-        return baseClass + this.className;
+        return baseClass + this.className
       } else {
-        return baseClass;
+        return baseClass
       }
     },
     styleExternalIcon() {
       return {
-        mask: `url(${this.name}) no-repeat 50% 50%`,
-        "-webkit-mask": `url(${this.name}) no-repeat 50% 50%`,
-      };
+        mask: `url(${this.iconClass}) no-repeat 50% 50%`,
+        '-webkit-mask': `url(${this.iconClass}) no-repeat 50% 50%`,
+      }
     },
   },
-};
+}
 </script>
 
 <style lang="less" scoped>
 .tbc-ai-app-icon-svg {
-  display: inline-block;
-  color: rgba(0, 0, 0, 0.85);
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
   overflow: hidden;
-  line-height: 1;
 }
 
 .svg-external-icon {

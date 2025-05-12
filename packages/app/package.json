@@ -34,6 +34,8 @@
     "clsx": "catalog:",
     "core-js": "catalog:",
     "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
     "eslint-plugin-vue": "catalog:",
     "install": "catalog:",
     "less": "catalog:",
@@ -45,19 +47,6 @@
     "tailwind-merge": "catalog:",
     "tailwindcss": "catalog:",
     "vue-template-compiler": "catalog:"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "@babel/eslint-parser"
-    }
   },
   "browserslist": [
     "> 1%",
