@@ -22,17 +22,16 @@ export default {
   },
   computed: {
     content() {
-      return this.html.slice(259)
+      return this.html
     }
   },
   mounted() {
     tbcSSE.subscribe('onopen', event => {
-      this.html += '\n\n' // 这里处理是因为think标签会被tokenize到上次尾token的child节点中
       console.log('[SSE OPEN]', event)
     })
     tbcSSE.subscribe('onmessage', event => {
       const parsedData = JSON.parse(event.event.data)
-      this.html += parsedData.answer
+      this.html += parsedData.answer || ''
     })
     tbcSSE.subscribe('onend', event => {
       console.log('[SSE END]', event)
@@ -53,7 +52,7 @@ export default {
           boxType: 'TC_045',
           types: 'SPARK',
           sendMsg: '返回一个url',
-          elnSessionId: 'elnSessionId.5f612f37bb684decb02de3beee3a41f8',
+          elnSessionId: 'elnSessionId.2ea8ed2f153a4dddade7b25626399bbe',
           convId: '',
           resourceId: '',
           resourceType: '',

@@ -7,8 +7,8 @@ settings:
 catalogs:
   default:
     '@21tb/tbc-sse':
-      specifier: ^0.0.5
-      version: 0.0.5
+      specifier: ^0.0.6
+      version: 0.0.6
     '@babel/core':
       specifier: ^7.12.16
       version: 7.27.1
@@ -127,7 +127,7 @@ importers:
     dependencies:
       '@21tb/tbc-sse':
         specifier: 'catalog:'
-        version: 0.0.5
+        version: 0.0.6
       github-markdown-css:
         specifier: 'catalog:'
         version: 5.8.1
@@ -240,8 +240,8 @@ importers:
 
 packages:
 
-  '@21tb/tbc-sse@0.0.5':
-    resolution: {integrity: sha512-1cItA0eGJtYSwFllX0TibpvUq/kDkGPJoBGe1m+17o3CDj9uvAIOg52Mp7wE46kxUC+gKU9yYrdYBlBErGYCLg==}
+  '@21tb/tbc-sse@0.0.6':
+    resolution: {integrity: sha512-IvJNB79jUyVfqnVfYy+pDte1EVSfWWBko8rrelMRt4Ad/dm7WrSoXYqhzKZ+zQIN8IASzCkOxGKEUqtPFZ1dRw==}
 
   '@achrinza/node-ipc@9.2.9':
     resolution: {integrity: sha512-7s0VcTwiK/0tNOVdSX9FWMeFdOEcsAOz9HesBldXxFMaGvIak7KC2z9tV9EgsQXn6KUsWsfIkViMNuIo0GoZDQ==}
@@ -5327,7 +5327,7 @@ packages:
 
 snapshots:
 
-  '@21tb/tbc-sse@0.0.5': {}
+  '@21tb/tbc-sse@0.0.6': {}
 
   '@achrinza/node-ipc@9.2.9':
     dependencies:

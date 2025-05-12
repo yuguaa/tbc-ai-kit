@@ -42,6 +42,14 @@ md.core.ruler.push('think', function (state) {
   let status = 'UN_START' // 默认状态
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i]
+    if (token.type === 'html_block' && token.content.startsWith('<div')) {
+      const index = token.content.indexOf('<think>')
+      if (index !== -1) {
+        token.content = token.content.slice(index)
+      } else {
+        token.content = ''
+      }
+    }
     // 如果是开始的 <think> 标签
     if ((token.type === 'html_block' || token.type === 'html_inline') && token.content.startsWith('<think>')) {
       insideThink = true

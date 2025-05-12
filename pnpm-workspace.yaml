@@ -37,5 +37,5 @@ catalog:
   "@vue/cli-plugin-babel": ~5.0.0
   "@vue/cli-plugin-eslint": ~5.0.0
   "@vue/cli-service": ~5.0.0
-  "@21tb/tbc-sse": ^0.0.5
+  "@21tb/tbc-sse": ^0.0.6
   
