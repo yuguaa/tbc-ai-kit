@@ -1,8 +1,9 @@
 <template>
-  <transition name="y-drawer">
+  <transition name="y-drawer" @after-enter="afterEnter" @after-leave="afterLeave">
     <div
       v-if="visible"
-      class="y-drawer-overlay y-fixed y-inset-0 y-z-50 y-bg-black y-bg-opacity-85"
+      class="y-drawer-overlay y-fixed y-inset-0 y-bg-black y-bg-opacity-85"
+      :style="{ zIndex: zIndex }"
       @click="handleOverlayClick"
     >
       <div
@@ -23,6 +24,8 @@
 </template>
 
 <script>
+import { modalUtils } from '@/utils/modalUtils'
+
 export default {
   name: 'YDrawer',
   props: {
@@ -32,13 +35,30 @@ export default {
     },
     width: {
       type: String,
-      default: '30%', // 默认宽度为屏幕的30%
+      default: '30%',
     },
+  },
+  data() {
+    return {
+      zIndex: 1000,
+      isClosing: false, // 标记是否正在关闭（动画进行中）
+    }
   },
   computed: {
     drawerStyle() {
       return {
         width: this.getDrawerWidth(),
+        overflowY: 'auto', // 确保内容区域可滚动
+      }
+    },
+  },
+  watch: {
+    visible(newVal) {
+      if (newVal) {
+        this.isClosing = false // 重置关闭状态
+        this.zIndex = modalUtils.openModal() // 打开时获取 z-index
+      } else {
+        this.isClosing = true // 标记为关闭中，等待动画结束
       }
     },
   },
@@ -55,15 +75,28 @@ export default {
       return widthMap[this.width] || this.width
     },
     handleOverlayClick() {
-      // 点击遮罩层直接关闭抽屉
       this.close()
     },
+    afterEnter() {
+      // 动画进入完成，可用于其他逻辑（此处无需额外处理）
+    },
+    afterLeave() {
+      // 动画离开完成后解除滚动
+      if (this.isClosing) {
+        modalUtils.closeModal()
+        this.isClosing = false // 重置状态
+      }
+    },
+  },
+  beforeDestroy() {
+    if (this.visible || this.isClosing) {
+      modalUtils.closeModal() // 清理状态
+    }
   },
 }
 </script>
 
 <style scoped>
-/* 抽屉滑入滑出动画 */
 .y-drawer-enter-active,
 .y-drawer-leave-active {
   transition: opacity 0.3s ease-in-out;
@@ -84,7 +117,6 @@ export default {
   transition: transform 0.3s ease-in-out;
 }
 
-/* 确保内容区域支持滚动 */
 .y-drawer-content {
   box-sizing: border-box;
   transition: transform 0.3s ease-in-out;
