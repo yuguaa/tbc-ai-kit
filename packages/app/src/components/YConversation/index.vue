@@ -16,7 +16,7 @@
           <div class="y-mb-4">{{ key }}</div>
           <div>
             <div
-              class="hover:y-bg-borderLight y-flex y-cursor-pointer y-items-center y-rounded-[8px] y-px-12 y-py-8"
+              class="y-flex y-cursor-pointer y-items-center y-rounded-[8px] y-px-12 y-py-8 hover:y-bg-borderLight"
               :class="{
                 'y-bg-second': conversation.sessionId === activeSessionId,
               }"
@@ -38,7 +38,7 @@
 <script>
 import SvgIcon from '@/components/SvgIcon'
 export default {
-  name: 'Conversation',
+  name: 'YConversation',
   components: {
     SvgIcon,
   },

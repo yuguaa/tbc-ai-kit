@@ -9,7 +9,7 @@ const AI_APP_PROPS = {
     },
     validator: function (config) {
       const validModes = ['page', 'modal', 'drawer']
-      const validSizes = ['full', 'large', 'medium', 'mini']
+      const validSizes = ['large', 'medium', 'small']
       const size = config.size
 
       // 验证 mode
@@ -34,7 +34,11 @@ const AI_APP_PROPS = {
   },
   visible: {
     type: Boolean,
-    default: true,
+    default: false,
+  },
+  onvisibleChange: {
+    type: Function,
+    default: () => {},
   },
 }
 const APP_MODE_MAP = {

@@ -1,6 +1,6 @@
 ```vue
 <template>
-  <popper
+  <y-popper
     trigger="clickToOpen"
     :options="{
       placement: 'top',
@@ -10,6 +10,6 @@
     <div class="popper">Popper Content</div>
 
     <button slot="reference">Reference Element</button>
-  </popper>
+  </y-popper>
 </template>
 ```

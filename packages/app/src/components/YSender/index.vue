@@ -2,18 +2,18 @@
   <div class="qa-sender">
     <div class="y-pb-12" v-if="mode === 'drawer'">
       <div class="y-flex">
-        <action-button>
+        <y-button>
           <template #icon>
             <svg-icon icon-class="new-chat" />
           </template>
           <span>切换企业知识库</span>
-        </action-button>
-        <action-button class="y-ml-12">
+        </y-button>
+        <y-button class="y-ml-12">
           <template #icon>
             <svg-icon icon-class="history" />
           </template>
           <span>上网搜索</span>
-        </action-button>
+        </y-button>
       </div>
     </div>
     <div :class="['qa-sender__content', isFocus ? 'focus' : '']">
@@ -28,18 +28,18 @@
       </div>
       <div class="qa-sender__btns">
         <div class="qa-sender__actions">
-          <action-button type="select" v-model="senderContent.useKnowledge">
+          <y-button type="select" v-model="senderContent.useKnowledge">
             <template #icon>
               <svg-icon icon-class="controlplatform" />
             </template>
             <span>切换企业知识库</span>
-          </action-button>
-          <action-button class="y-ml-12" type="select" v-model="senderContent.useInternet">
+          </y-button>
+          <y-button class="y-ml-12" type="select" v-model="senderContent.useInternet">
             <template #icon>
               <svg-icon icon-class="internet" />
             </template>
             <span>上网搜索</span>
-          </action-button>
+          </y-button>
         </div>
         <div class="qa-sender__submit">
           <svg-icon icon-class="pause" v-if="isGenerating" />
@@ -52,12 +52,12 @@
 
 <script>
 import SvgIcon from '@/components/SvgIcon'
-import ActionButton from '@/components/ActionButton'
+import YButton from '@/components/YButton'
 import InputArea from './InputArea.vue'
 export default {
   components: {
     SvgIcon,
-    ActionButton,
+    YButton,
     InputArea,
   },
   props: {

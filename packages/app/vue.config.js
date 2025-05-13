@@ -23,7 +23,7 @@ module.exports = defineConfig({
   },
   devServer: {
     https: false,
-    open: true,
+    open: false,
     proxy: 'https://test.21tb.com/'
   },
   configureWebpack: config => {

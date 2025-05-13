@@ -1,6 +1,6 @@
 // main.js
 import Vue from 'vue'
-import AiApp from '@/components/AiApp' // 直接导入 AIApp
+import YAiApp from '@/components/YAiApp' // 直接导入 AIApp
 // import App from './App.vue'
 import '@/icons'
 import '@/styles/tailwindcss.css'
@@ -15,7 +15,7 @@ class TbcAiApp {
       document.body.appendChild(app)
       target = '#__TBC_AI_APP_DOM'
     }
-    // 创建 Vue 实例，挂载 AiApp 组件
+    // 创建 Vue 实例，挂载 YAiApp 组件
     const vm = new Vue({
       data() {
         return {
@@ -24,7 +24,7 @@ class TbcAiApp {
         }
       },
       render(h) {
-        return h(AiApp, {
+        return h(YAiApp, {
           props: {
             config,
             visible: this.isVisible,
@@ -62,7 +62,6 @@ if (process.env.NODE_ENV === 'development') {
   new Vue({
     data() {
       return {
-        showPage: true,
         showModal: false,
         showDrawer: false,
         pageApp: null,
@@ -81,7 +80,6 @@ if (process.env.NODE_ENV === 'development') {
             console.log('Page AIApp mounted')
           },
         },
-        visible: this.showPage,
       })
 
       // 创建 modal 实例

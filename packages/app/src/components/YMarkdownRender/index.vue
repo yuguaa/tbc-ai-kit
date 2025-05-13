@@ -3,7 +3,7 @@ import Think from './Think.vue'
 import md from '@/utils/md'
 
 export default {
-  name: 'MdRenderer',
+  name: 'YMdRenderer',
   components: {
     Think
   },
