@@ -1,79 +1,157 @@
+<!-- AIApp.vue -->
 <template>
-  <div class="y-flex y-h-screen y-flex-col y-items-center y-justify-center y-p-4">
-    <button class="y-fixed y-right-10 y-top-10 y-shadow" @click="send">发送</button>
-    <MarkdownRender :content="content" />
-    <Sender />
+  <div class="ai-app y-relative y-h-full y-w-full">
+    <!-- page 模式：直接渲染在 DOM 上，无动画 -->
+    <div
+      v-if="config.mode === 'page' && visible"
+      :style="sizeStyle"
+      class="page-content y-rounded y-border y-border-gray-200 y-bg-white y-p-4"
+    >
+      <slot></slot>
+    </div>
+
+    <!-- modal 模式：自定义弹窗，带淡入淡出动画 -->
+    <transition name="fade">
+      <div
+        v-if="config.mode === 'modal' && visible"
+        class="modal-overlay y-fixed y-inset-0 y-z-50 y-flex y-items-center y-justify-center y-bg-black y-bg-opacity-50"
+      >
+        <div
+          :style="modalStyle"
+          class="modal-content y-relative y-overflow-auto y-rounded y-bg-white y-p-4 y-shadow-lg"
+        >
+          <button
+            class="close-btn y-absolute y-right-2 y-top-2 y-cursor-pointer y-rounded y-bg-gray-100 y-px-2 y-py-1 y-text-sm hover:y-bg-gray-200"
+            @click="close"
+          >
+            关闭
+          </button>
+          <slot></slot>
+        </div>
+      </div>
+    </transition>
+
+    <!-- drawer 模式：自定义抽屉，带滑入滑出动画 -->
+    <transition name="slide">
+      <div v-if="config.mode === 'drawer' && visible" class="drawer-container y-fixed y-inset-0 y-z-50">
+        <div :style="drawerStyle" class="drawer-content y-overflow-auto y-bg-white y-p-4 y-shadow-lg">
+          <button
+            class="close-btn y-absolute y-right-2 y-top-2 y-cursor-pointer y-rounded y-bg-gray-100 y-px-2 y-py-1 y-text-sm hover:y-bg-gray-200"
+            @click="close"
+          >
+            关闭
+          </button>
+          <slot></slot>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
-import TbcSSE from '@21tb/tbc-sse'
-const tbcSSE = new TbcSSE({})
-import MarkdownRender from '@/components/MarkdownRender/index.vue'
-import Sender from '@/components/Sender/index.vue'
+import { AI_APP_PROPS } from '@/const/aiApp'
+
 export default {
-  name: 'AiApp',
-  components: {
-    MarkdownRender,
-    Sender,
-  },
-  props: {},
-  data() {
-    return {
-      html: '',
-    }
-  },
+  name: 'AIApp',
+  props: AI_APP_PROPS,
   computed: {
-    content() {
-      return this.html
+    // page 模式的样式
+    sizeStyle: function () {
+      const size = this.config.size
+      const sizeMap = {
+        full: '100%',
+        large: '80%',
+        medium: '60%',
+        mini: '40%',
+      }
+
+      const width = sizeMap[size] || (/^\d+%$/.test(size) || /^\d+px$/.test(size) ? size : '80%')
+      const height = size === 'full' || size === '100%' ? '100%' : 'auto'
+
+      return {
+        width: width,
+        height: height,
+        boxSizing: 'border-box',
+      }
+    },
+    // modal 模式的样式
+    modalStyle: function () {
+      const size = this.config.size
+      const sizeMap = {
+        full: '100%',
+        large: '80%',
+        medium: '60%',
+        mini: '40%',
+      }
+
+      const width = sizeMap[size] || (/^\d+%$/.test(size) || /^\d+px$/.test(size) ? size : '80%')
+      const height = size === 'full' || size === '100%' ? '100%' : 'auto'
+
+      return {
+        width: width,
+        height: height,
+        maxHeight: '80vh', // 限制最大高度，避免溢出
+        minHeight: '300px',
+        position: 'relative',
+      }
+    },
+    // drawer 模式的样式
+    drawerStyle: function () {
+      const size = this.config.size
+      const sizeMap = {
+        full: '100%',
+        large: '80%',
+        medium: '50%',
+        mini: '30%',
+      }
+
+      const width = sizeMap[size] || (/^\d+%$/.test(size) || /^\d+px$/.test(size) ? size : '50%')
+
+      return {
+        width: width,
+        height: '100%',
+        position: 'fixed',
+        top: '0',
+        right: '0',
+      }
     },
   },
-  mounted() {
-    tbcSSE.subscribe('onopen', (event) => {
-      console.log('[SSE OPEN]', event)
-    })
-    tbcSSE.subscribe('onmessage', (event) => {
-      const parsedData = JSON.parse(event.event.data)
-      this.html += parsedData.answer || ''
-    })
-    tbcSSE.subscribe('onend', (event) => {
-      console.log('[SSE END]', event)
-    })
-    tbcSSE.subscribe('onerror', (event) => {
-      console.error('[SSE ERROR]', event)
-    })
-    tbcSSE.subscribe('onfinally', (event) => {
-      console.log('[SSE FINALLY]', JSON.stringify(this.html))
-      console.log('[SSE FINALLY]', event)
-    })
+  watch: {
+    // 监听 visible 变化，控制页面滚动
+    visible: function (val) {
+      document.body.style.overflow =
+        val && (this.config.mode === 'modal' || this.config.mode === 'drawer') ? 'hidden' : ''
+    },
   },
   methods: {
-    send() {
-      tbcSSE.sendSSE({
-        url: 'https://test-gpt.21tb.com/gpt/chat/sendMsgSteam',
-        params: {
-          boxType: 'TC_045',
-          types: 'SPARK',
-          sendMsg: '返回一个url',
-          elnSessionId: 'elnSessionId.2ea8ed2f153a4dddade7b25626399bbe',
-          convId: '',
-          resourceId: '',
-          resourceType: '',
-          sessionId: 'ai_search-uuid-1746861908840',
-          inputs: {
-            question: '返回一个url',
-            domain_name: '172.16.31.213:9000',
-            cookie:
-              'local_=zh_CN; qimo_seosource_0=%E7%AB%99%E5%86%85; qimo_seokeywords_0=; uuid_02253ce0-2088-11ee-945f-f73ba1f1c579=838e9109-20a2-4972-86ac-7a4f0d7e8801; qimo_seosource_02253ce0-2088-11ee-945f-f73ba1f1c579=%E7%AB%99%E5%86%85; qimo_seokeywords_02253ce0-2088-11ee-945f-f73ba1f1c579=; qimo_xstKeywords_02253ce0-2088-11ee-945f-f73ba1f1c579=; href=http%3A%2F%2F172.16.31.213%3A9000%2Frtr-frontend%2F; accessId=02253ce0-2088-11ee-945f-f73ba1f1c579; tbc-ai-robot-name=%E5%B0%8F%E7%A6%BETbc%E4%BC%81%E4%B8%9A%E6%99%BA%E6%85%A7%E5%A4%A7%E8%84%910625; corp_code=shyf17; eln_session_id=elnSessionId.5f612f37bb684decb02de3beee3a41f8; pageViewNum=28',
-            directAnswer: true,
-          },
-          aiSearchUuid: 'ai_search-uuid-1746861908840',
-        },
-        timeout: 180000,
-      })
+    // 关闭 modal 或 drawer
+    close: function () {
+      this.$emit('update:visible', false)
     },
   },
 }
 </script>
 
-<style lang="less" scoped></style>
+<style scoped>
+/* modal 淡入淡出动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* drawer 滑入滑出动画 */
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease-in-out;
+}
+
+.slide-enter,
+.slide-leave-to {
+  transform: translateX(100%);
+}
+</style>

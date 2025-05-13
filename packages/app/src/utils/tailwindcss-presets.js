@@ -21,6 +21,20 @@ module.exports = {
         borderLight: '#F0F0F0',
         limit: '#BFBFBF',
       },
+      animation: {
+        fade: 'fade 0.3s ease-in-out',
+        slide: 'slide 0.3s ease-in-out',
+      },
+      keyframes: {
+        fade: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slide: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+      },
     },
     spacing: {
       1: '1px',

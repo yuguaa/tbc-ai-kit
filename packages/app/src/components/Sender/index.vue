@@ -1,6 +1,6 @@
 <template>
   <div class="qa-sender">
-    <div class="y-pb-12" v-if="mode === 'mini'">
+    <div class="y-pb-12" v-if="mode === 'drawer'">
       <div class="y-flex">
         <action-button>
           <template #icon>
@@ -67,7 +67,7 @@ export default {
     },
     mode: {
       type: String,
-      default: 'mini',
+      default: '',
     },
   },
   data() {
@@ -103,7 +103,7 @@ export default {
   flex-direction: column;
   flex-shrink: 0;
   /* height: 118px; */
-  padding: 0 24px 20px;
+  // padding: 0 24px 20px;
   font-family: 'PingFang SC';
   &__content {
     box-sizing: border-box;

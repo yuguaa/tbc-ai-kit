@@ -1,50 +1,63 @@
+<!-- App.vue -->
 <template>
-  <!-- 使用 template 模板渲染 TbcAiApp 组件 -->
-  <TbcAiApp :config="config" ref="tbcAiAppRef" @init="init" />
+  <div class="y-h-screen y-p-4">
+    <!-- 控制按钮 -->
+    <div class="y-mb-4 y-space-x-2">
+      <button class="y-rounded y-bg-blue-500 y-px-4 y-py-2 y-text-white hover:y-bg-blue-600" @click="togglePage">
+        Toggle Page
+      </button>
+      <button class="y-rounded y-bg-blue-500 y-px-4 y-py-2 y-text-white hover:y-bg-blue-600" @click="toggleModal">
+        Toggle Modal
+      </button>
+      <button class="y-rounded y-bg-blue-500 y-px-4 y-py-2 y-text-white hover:y-bg-blue-600" @click="toggleDrawer">
+        Toggle Drawer
+      </button>
+    </div>
+
+    <!-- page 模式 -->
+    <ai-app :config="{ mode: 'page', size: 'large' }" :visible.sync="showPage">
+      <h2 class="y-mb-2 y-text-2xl">Page Content</h2>
+      <p>This is rendered directly in the DOM.</p>
+    </ai-app>
+
+    <!-- modal 模式 -->
+    <ai-app :config="{ mode: 'modal', size: 'medium' }" :visible.sync="showModal">
+      <h2 class="y-mb-2 y-text-2xl">Modal Content</h2>
+      <p>This is a modal dialog with fade animation.</p>
+    </ai-app>
+
+    <!-- drawer 模式 -->
+    <ai-app :config="{ mode: 'drawer', size: '50%' }" :visible.sync="showDrawer">
+      <h2 class="y-mb-2 y-text-2xl">Drawer Content</h2>
+      <p>This is a drawer with slide animation.</p>
+    </ai-app>
+  </div>
 </template>
 
 <script>
-import TbcAiApp from '@/components/AiApp/index.vue'
+import AIApp from './components/AiApp'
 
 export default {
   components: {
-    TbcAiApp, // 注册 TbcAiApp 组件
+    'ai-app': AIApp,
   },
-  props: {
-    config: {
-      type: Object,
-      default: () => {
-        return {
-          mode: 'mini', // full hide mini
-        }
-      },
-    },
-  },
-  data() {
+  data: function () {
     return {
-      tbcAiApp: null, // 用于存储 TbcAiApp 实例的引用
+      showPage: true,
+      showModal: false,
+      showDrawer: false,
     }
   },
-  mounted() {
-    // 组件挂载时的生命周期钩子
-  },
   methods: {
-    init(tbcAiApp) {
-      // 初始化方法，用于设置 tbcAiApp 的引用
-      this.tbcAiApp = tbcAiApp
+    togglePage: function () {
+      this.showPage = !this.showPage
+    },
+    toggleModal: function () {
+      this.showModal = !this.showModal
+    },
+    toggleDrawer: function () {
+      this.showDrawer = !this.showDrawer
     },
   },
 }
 </script>
-
-<style lang="less">
-html,
-body {
-  width: 100%; /* 设置页面宽度为 100% */
-  height: 100%; /* 设置页面高度为 100% */
-  padding: 0; /* 去除内边距 */
-  margin: 0; /* 去除外边距 */
-  background: white; /* 设置背景颜色为白色 */
-  overflow: hidden;
-}
-</style>

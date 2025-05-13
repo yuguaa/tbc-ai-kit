@@ -21,6 +21,7 @@
     "markdown-it-mark": "catalog:",
     "markdown-it-task-lists": "catalog:",
     "markdown-it-toc-done-right": "catalog:",
+    "popper.js": "catalog:",
     "vue": "catalog:"
   },
   "devDependencies": {
