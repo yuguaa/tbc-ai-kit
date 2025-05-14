@@ -15,13 +15,9 @@ const AI_APP_PROPS = {
     type: Object,
     default: () => {
       return {
+        url: '',
         beforeReq: () => {},
         beforeRes: () => {},
-        apiFn: () => {
-          return new Promise((resolve) => {
-            resolve()
-          })
-        },
       }
     },
   },

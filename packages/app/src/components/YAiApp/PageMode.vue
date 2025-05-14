@@ -26,21 +26,24 @@
               class="y-mt-20 y-flex y-cursor-pointer y-items-center y-rounded-[8px] y-border y-border-solid y-border-borderDark y-bg-white y-px-16 y-py-[7px] y-text-secondText y-transition-all y-duration-300 hover:y-shadow-custom"
             >
               <svg-icon class="y-text-[14px]" icon-class="new-chat"></svg-icon>
-              <span class="y-ml-4">AI智能助手</span>
+              <span class="y-ml-4">新会话</span>
             </div>
           </div>
           <div class="y-layout-sidebar-content y-overflow-auto y-p-20 y-scrollbar-common">
-            <YConversation :showIcon="!modeConfig.modeIsFull" :showBack="!modeConfig.modeIsFull" />
+            <y-conversation :showIcon="!modeConfig.modeIsFull" :showBack="!modeConfig.modeIsFull" />
           </div>
         </div>
       </div>
-      <div class="y-layout-main y-box-border y-flex y-h-full y-flex-1 y-flex-col y-overflow-hidden y-p-8">
+      <div
+        class="y-layout-main y-box-border y-flex y-h-full y-flex-1 y-flex-col y-overflow-hidden"
+        :class="modeConfig.modeIsFull ? 'y-p-8' : ''"
+      >
         <div class="y-layout-content y-flex y-flex-1 y-flex-col y-overflow-hidden y-rounded-[8px]">
           <div
             class="y-layout-header y-box-border y-flex y-h-52 y-shrink-0 y-select-none y-items-center y-justify-between y-px-20 y-py-12 y-text-[20px]"
           >
-            <div class="y-flex y-items-center y-gap-12">
-              <template v-if="modeConfig.modeIsFull && !modeConfig.modeShowSidebar">
+            <div class="y-flex y-items-center y-gap-12" v-if="modeConfig.modeIsFull">
+              <template v-if="!modeConfig.modeShowSidebar">
                 <span class="y-p-4">
                   <svg-icon class="y-cursor-pointer" icon-class="leftside" @click="openSiderbar"></svg-icon>
                 </span>
@@ -57,6 +60,9 @@
                 </y-popper>
               </template>
               <div class="y-select-text y-text-[16px] y-font-[600]">当前对话的标题</div>
+            </div>
+            <div class="y-flex y-items-center y-text-[16px]" v-else>
+              <span>AI智能助手</span>
             </div>
             <div class="y-flex y-items-center y-gap-20">
               <span class="y-p-4">
@@ -81,13 +87,53 @@
                 </span>
               </y-popper>
               <div class="y-flex y-h-28 y-w-28 y-items-center y-justify-center y-rounded-full">
-                <img class="y-h-28 y-w-28 y-rounded-full" src="https://www.picsum.photos/100/100" alt="" srcset="" />
+                <img
+                  class="y-h-28 y-w-28 y-rounded-full y-bg-borderDark"
+                  src="https://www.picsum.photos/100/100"
+                  alt=""
+                  srcset=""
+                />
               </div>
             </div>
           </div>
-          <div class="y-flex-1 y-overflow-auto y-scrollbar-common">
-            <div class="y-layout-content-inner">
-              <y-messages :messages="bubbleList"></y-messages>
+          <div class="y-box-border y-flex y-flex-1 y-flex-col y-items-center">
+            <div class="y-relative y-box-border y-flex y-w-full y-flex-1 y-flex-col y-items-center y-overflow-hidden">
+              <div
+                class="y-absolute y-bottom-0 y-right-0 y-top-0 y-box-border y-flex y-h-full y-w-full y-flex-col-reverse y-items-center y-overflow-hidden y-overflow-y-auto y-scrollbar-common"
+              >
+                <div class="y-messages-holder y-flex-1"></div>
+                <div
+                  class="y-box-border y-flex y-flex-col"
+                  :class="modeConfig.modeIsFull ? '' : 'y-px-20  y-pr-0'"
+                  :style="getMessagesStyle"
+                >
+                  <y-messages :messages="bubbleList"></y-messages>
+                </div>
+              </div>
+            </div>
+            <div
+              class="y-box-border"
+              :class="modeConfig.modeIsFull ? 'y-pb-20' : 'y-px-20  y-pb-20'"
+              :style="getMessagesStyle"
+            >
+              <y-sender>
+                <div v-if="!modeConfig.modeIsFull" class="y-pb-12">
+                  <div class="y-flex">
+                    <y-button>
+                      <template #icon>
+                        <svg-icon icon-class="new-chat" />
+                      </template>
+                      <span>切换企业知识库</span>
+                    </y-button>
+                    <y-button class="y-ml-12">
+                      <template #icon>
+                        <svg-icon icon-class="history" />
+                      </template>
+                      <span>上网搜索</span>
+                    </y-button>
+                  </div>
+                </div>
+              </y-sender>
             </div>
           </div>
         </div>
@@ -102,6 +148,8 @@ import SvgIcon from '@/components/SvgIcon'
 import YConversation from '@/components/YConversation'
 import YPopper from '@/components/YPopper'
 import YMessages from '@/components/YMessages'
+import YSender from '@/components/YSender'
+import YButton from '@/components/YButton'
 export default {
   name: 'YLayout',
   components: {
@@ -109,32 +157,44 @@ export default {
     YConversation,
     YPopper,
     YMessages,
+    YSender,
+    YButton,
   },
   props: AI_APP_PROPS,
   data() {
     return {
-      bubbleList: [],
+      bubbleList: [1, 2, 3],
     }
   },
   computed: {
     getLayoutStyle() {
-      if (this.modeConfig.mode === 'page') {
-        return {
-          width: this.modeConfig.modeIsFull ? this.modeConfig.modeFullSize : this.modeConfig.modeNormalSize,
-        }
-      } else if (this.modeConfig.mode === 'modal') {
-        return {
-          width: '100%',
-          height: '100%',
-        }
-      } else if (this.modeConfig.mode === 'drawer') {
+      if (this.modeConfig.mode === 'modal' || this.modeConfig.mode === 'drawer') {
         return {
           width: '100%',
           height: '100%',
         }
       }
-      return {}
+      if (this.modeConfig.modeIsFull) {
+        return this.modeConfig.modeFull[this.modeConfig.mode]
+      } else {
+        return this.modeConfig.modeNormal[this.modeConfig.mode]
+      }
     },
+    getMessagesStyle() {
+      if (this.modeConfig.modeIsFull) {
+        console.log(`🚀 ~ this.modeConfig.modeFull:`, this.modeConfig.modeFull.messages)
+        return this.modeConfig.modeFull.messages
+      } else {
+        return this.modeConfig.modeNormal.messages
+      }
+    },
+  },
+  mounted() {
+    setInterval(() => {
+      if (this.bubbleList.length < 50) {
+        this.bubbleList.push(this.bubbleList.length + 1)
+      }
+    }, 100)
   },
   methods: {
     closeSiderbar() {

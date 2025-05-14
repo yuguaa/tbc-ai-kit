@@ -1,5 +1,5 @@
 <template>
-  <y-drawer :visible="modeConfig.modeVisible" v-bind="{ ...$props, ...getModalStyle }" @update:visible="close">
+  <y-drawer :visible="modeConfig.modeVisible" v-bind="{ ...$props, ...getDrawerStyle }" @update:visible="close">
     <page-mode v-bind="$props" v-on="$listeners" />
   </y-drawer>
 </template>
@@ -18,10 +18,11 @@ export default {
     return {}
   },
   computed: {
-    getModalStyle() {
-      return {
-        width: this.modeConfig.modeIsFull ? this.modeConfig.modeFullSize : this.modeConfig.modeNormalSize,
+    getDrawerStyle() {
+      if (this.modeConfig.modeIsFull) {
+        return this.modeConfig.modeFull[this.modeConfig.mode]
       }
+      return this.modeConfig.modeNormal[this.modeConfig.mode]
     },
   },
   methods: {

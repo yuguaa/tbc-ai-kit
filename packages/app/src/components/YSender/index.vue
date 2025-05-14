@@ -1,21 +1,6 @@
 <template>
   <div class="qa-sender">
-    <div class="y-pb-12" v-if="mode === 'drawer'">
-      <div class="y-flex">
-        <y-button>
-          <template #icon>
-            <svg-icon icon-class="new-chat" />
-          </template>
-          <span>切换企业知识库</span>
-        </y-button>
-        <y-button class="y-ml-12">
-          <template #icon>
-            <svg-icon icon-class="history" />
-          </template>
-          <span>上网搜索</span>
-        </y-button>
-      </div>
-    </div>
+    <slot></slot>
     <div :class="['qa-sender__content', isFocus ? 'focus' : '']">
       <div class="qa-sender__input">
         <input-area
@@ -105,6 +90,7 @@ export default {
   /* height: 118px; */
   // padding: 0 24px 20px;
   font-family: 'PingFang SC';
+  box-sizing: border-box;
   &__content {
     box-sizing: border-box;
     display: flex;

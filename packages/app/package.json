@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@21tb/tbc-sse": "catalog:",
+    "deepmerge": "catalog:",
     "github-markdown-css": "catalog:",
     "markdown-it": "catalog:",
     "markdown-it-abbr": "catalog:",

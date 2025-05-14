@@ -19,16 +19,14 @@ export default {
   },
   computed: {
     getModalStyle() {
-      return {
-        width: this.modeConfig.modeIsFull ? this.modeConfig.modeModalFullWidth : this.modeConfig.modeModalNormalWidth,
-        height: this.modeConfig.modeIsFull
-          ? this.modeConfig.modeModalFullHeight
-          : this.modeConfig.modeModalNormalHeight,
+      if (this.modeConfig.modeIsFull) {
+        console.log(`🚀 ~ this.modeConfig.modeFull[this.modeConfig.mode]:`, this.modeConfig.modeFull[this.modeConfig.mode])
+        return this.modeConfig.modeFull[this.modeConfig.mode]
+      } else {
+        console.log(`🚀 ~ this.modeConfig.modeFull[this.modeConfig.mode]:`, this.modeConfig.modeNormal[this.modeConfig.mode])
+        return this.modeConfig.modeNormal[this.modeConfig.mode]
       }
     },
-  },
-  created() {
-    console.log(`🚀 ~ modeConfig:`, this)
   },
   methods: {
     close() {

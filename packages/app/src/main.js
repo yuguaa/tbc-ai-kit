@@ -4,26 +4,13 @@ import YAiApp from '@/components/YAiApp' // 直接导入 AIApp
 // import App from './App.vue'
 import '@/icons'
 import '@/styles/tailwindcss.css'
+import deepmerge from 'deepmerge'
 Vue.config.productionTip = false
 
 class TbcAiApp {
   vm = null
   modeConfig = {}
-  constructor({
-    target,
-    modeConfig = {
-      mode: 'page',
-      modeFullSize: '100%',
-      modeNormalSize: '50%',
-      modeVisible: false,
-      modeShowSidebar: true,
-      modeModalNormalWidth: '50%',
-      modeModalNormalHeight: '50%',
-      modeModalFullWidth: '100%',
-      modeModalFullHeight: '100%',
-      modeIsFull: false,
-    },
-  }) {
+  constructor({ target, modeConfig }) {
     // 是否有 target，没有则添加到 body 子元素上
     if (!target) {
       const app = document.createElement('div')
@@ -31,7 +18,56 @@ class TbcAiApp {
       document.body.appendChild(app)
       target = '#__TBC_AI_APP_DOM'
     }
-    this.modeConfig = modeConfig
+    const defaultModeConfig = {
+      mode: 'page',
+      modeFull: {
+        page: {
+          width: '100%',
+          height: '100%',
+        },
+        modal: {
+          width: '100%',
+          height: '100%',
+        },
+        drawer: {
+          width: '100%',
+          height: '100%',
+        },
+        messages: {
+          minWidth: '800px',
+          maxWidth: '1200px',
+          width: '50%',
+        },
+      },
+      modeNormal: {
+        page: {
+          width: '50%',
+          height: '100%',
+        },
+        modal: {
+          width: '80%',
+          height: '80%',
+        },
+        drawer: {
+          width: '50%',
+          height: '100%',
+        },
+        messages: {
+          minWidth: '422px',
+          maxWidth: '1200px',
+          width: '100%',
+        },
+      },
+      modeIsFull: true,
+      modeVisible: false,
+      modeShowSidebar: true,
+    }
+    // modeConfig = {
+    //   ...defaultModeConfig,
+    //   ...modeConfig,
+    // }
+    this.modeConfig = deepmerge(defaultModeConfig, modeConfig)
+    console.log(`🚀 ~ this.modeConfig:`, this.modeConfig)
     const provider = () => {
       return {
         modeConfig: this.modeConfig,
@@ -103,31 +139,22 @@ if (process.env.NODE_ENV === 'development') {
       return {
         pageConfig: {
           mode: 'page',
-          modeFullSize: '100%',
-          modeNormalSize: '50%',
+          modeFull: {},
           modeVisible: false,
           modeShowSidebar: true,
           modeIsFull: true,
         },
         modalConfig: {
           mode: 'modal',
-          modeFullSize: '100%', // modal下没用
-          modeNormalSize: '50%', // modal下没用
-          modeModalNormalWidth: '50%', // modal弹窗控制
-          modeModalNormalHeight: '50%', // modal弹窗控制
-          modeModalFullWidth: '100%', // modal弹窗控制
-          modeModalFullHeight: '100%', // modal弹窗控制
-          modeVisible: true,
+          modeVisible: false,
           modeShowSidebar: true,
           modeIsFull: false,
         },
         drawerConfig: {
           mode: 'drawer',
-          modeFullSize: '100%',
-          modeNormalSize: '50%',
-          modeVisible: false,
+          modeVisible: true,
           modeShowSidebar: true,
-          modeIsFull: true,
+          modeIsFull: false,
         },
         pageApp: null,
         modalApp: null,
