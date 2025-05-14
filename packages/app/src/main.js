@@ -16,6 +16,12 @@ class TbcAiApp {
       modeFullSize: '100%',
       modeNormalSize: '50%',
       modeVisible: false,
+      modeShowSidebar: true,
+      modeModalNormalWidth: '50%',
+      modeModalNormalHeight: '50%',
+      modeModalFullWidth: '100%',
+      modeModalFullHeight: '100%',
+      modeIsFull: false,
     },
   }) {
     // 是否有 target，没有则添加到 body 子元素上
@@ -100,18 +106,28 @@ if (process.env.NODE_ENV === 'development') {
           modeFullSize: '100%',
           modeNormalSize: '50%',
           modeVisible: false,
+          modeShowSidebar: true,
+          modeIsFull: true,
         },
         modalConfig: {
           mode: 'modal',
-          modeFullSize: '100%',
-          modeNormalSize: '50%',
+          modeFullSize: '100%', // modal下没用
+          modeNormalSize: '50%', // modal下没用
+          modeModalNormalWidth: '50%', // modal弹窗控制
+          modeModalNormalHeight: '50%', // modal弹窗控制
+          modeModalFullWidth: '100%', // modal弹窗控制
+          modeModalFullHeight: '100%', // modal弹窗控制
           modeVisible: true,
+          modeShowSidebar: true,
+          modeIsFull: false,
         },
         drawerConfig: {
           mode: 'drawer',
           modeFullSize: '100%',
           modeNormalSize: '50%',
           modeVisible: false,
+          modeShowSidebar: true,
+          modeIsFull: true,
         },
         pageApp: null,
         modalApp: null,

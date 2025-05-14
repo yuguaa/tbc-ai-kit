@@ -1,9 +1,9 @@
 <template>
-  <div class="y-flex y-h-full y-flex-col y-p-20">
+  <div class="y-flex y-flex-col">
     <div class="y-flex y-shrink-0 y-justify-between">
       <div class="y-flex y-items-center">
         <svg-icon icon-class="chats" />
-        <div class="text">历史对话</div>
+        <div class="y-ml-8">历史对话</div>
       </div>
       <div v-if="showBack" class="y-flex y-cursor-pointer y-items-center" @click="clickBack">
         <svg-icon icon-class="arrow-left" />
@@ -12,13 +12,14 @@
     </div>
     <div class="y-flex-1 y-overflow-y-auto">
       <template v-if="Object.keys(conversationGroup).length">
-        <div class="y-mt-20" v-for="(value, key) in conversationGroup" :key="key">
+        <div class="y-mt-20 y-text-secondText" v-for="(value, key) in conversationGroup" :key="key">
           <div class="y-mb-4">{{ key }}</div>
           <div>
             <div
               class="y-flex y-cursor-pointer y-items-center y-rounded-[8px] y-px-12 y-py-8 hover:y-bg-borderLight"
               :class="{
                 'y-bg-second': conversation.sessionId === activeSessionId,
+                'y-text-main': conversation.sessionId === activeSessionId,
               }"
               v-for="conversation in value"
               :key="conversation.sessionId"

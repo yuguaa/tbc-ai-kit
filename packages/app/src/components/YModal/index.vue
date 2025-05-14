@@ -8,15 +8,17 @@
     >
       <div
         :style="modalStyle"
-        class="y-modal-content y-relative y-overflow-auto y-rounded y-bg-white y-p-4 y-shadow-lg"
+        class="y-modal-content y-relative y-rounded y-bg-white y-shadow-lg y-transition-all y-duration-300"
         @click.stop
       >
-        <button
-          class="close-btn y-absolute y-right-2 y-top-2 y-cursor-pointer y-rounded y-bg-gray-100 y-px-2 y-py-1 y-text-sm hover:y-bg-gray-200"
-          @click="close"
-        >
-          关闭
-        </button>
+        <slot name="header" v-if="showHeader">
+          <button
+            class="close-btn y-absolute y-right-2 y-top-2 y-cursor-pointer y-rounded y-bg-gray-100 y-px-2 y-py-1 y-text-sm hover:y-bg-gray-200"
+            @click="close"
+          >
+            关闭
+          </button>
+        </slot>
         <slot></slot>
       </div>
     </div>
@@ -29,6 +31,18 @@ import { modalUtils } from '@/utils/modalUtils'
 export default {
   name: 'YModal',
   props: {
+    width: {
+      type: String,
+      default: '80%',
+    },
+    height: {
+      type: String,
+      default: '100px',
+    },
+    showHeader: {
+      type: Boolean,
+      default: false,
+    },
     visible: {
       type: Boolean,
       default: false,
@@ -36,14 +50,6 @@ export default {
     size: {
       type: String,
       default: '80%',
-    },
-    maxHeight: {
-      type: String,
-      default: '80vh',
-    },
-    minHeight: {
-      type: String,
-      default: '500px',
     },
   },
   data() {
@@ -55,11 +61,8 @@ export default {
   computed: {
     modalStyle() {
       return {
-        width: this.getModalWidth(),
-        maxHeight: this.maxHeight,
-        minHeight: this.minHeight,
-        height: 'auto',
-        overflowY: 'auto', // 确保内容区域可滚动
+        width: this.width || this.getModalWidth(),
+        height: this.height || '100%',
       }
     },
   },
@@ -116,9 +119,5 @@ export default {
 .y-fade-enter,
 .y-fade-leave-to {
   opacity: 0;
-}
-
-.y-modal-content {
-  box-sizing: border-box;
 }
 </style>

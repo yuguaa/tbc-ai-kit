@@ -31,6 +31,9 @@ module.exports = {
         1: '1px',
         ...spacingsSettings,
       },
+      boxShadow: {
+        custom: '0 2px 8px 0px rgba(0, 0, 0, 0.08)', // 定义自定义阴影
+      },
     },
   },
   plugins: [

@@ -8,15 +8,17 @@
     >
       <div
         :style="drawerStyle"
-        class="y-drawer-content y-fixed y-bottom-0 y-right-0 y-top-0 y-overflow-auto y-bg-white y-shadow-lg"
+        class="y-drawer-content y-ovderflow-hidden y-fixed y-bottom-0 y-right-0 y-top-0 y-overflow-auto y-bg-white y-shadow-lg"
         @click.stop
       >
-        <button
-          class="close-btn y-absolute y-right-2 y-top-2 y-cursor-pointer y-rounded y-bg-gray-100 y-px-2 y-py-1 y-text-sm hover:y-bg-gray-200"
-          @click="close"
-        >
-          关闭
-        </button>
+        <slot v-if="showHeader" name="header">
+          <button
+            class="close-btn y-absolute y-right-2 y-top-2 y-cursor-pointer y-rounded y-bg-gray-100 y-px-2 y-py-1 y-text-sm hover:y-bg-gray-200"
+            @click="close"
+          >
+            关闭
+          </button>
+        </slot>
         <slot></slot>
       </div>
     </div>
@@ -29,6 +31,10 @@ import { modalUtils } from '@/utils/modalUtils'
 export default {
   name: 'YDrawer',
   props: {
+    showHeader: {
+      type: Boolean,
+      default: false,
+    },
     visible: {
       type: Boolean,
       default: false,
@@ -36,6 +42,10 @@ export default {
     width: {
       type: String,
       default: '30%',
+    },
+    size: {
+      type: String,
+      default: 'medium', // small, medium, large
     },
   },
   data() {
@@ -47,8 +57,9 @@ export default {
   computed: {
     drawerStyle() {
       return {
-        width: this.getDrawerWidth(),
-        overflowY: 'auto', // 确保内容区域可滚动
+        width: this.width || this.getDrawerWidth(),
+        transition: 'all 0.3s ease-in-out',
+        overflow: 'hidden',
       }
     },
   },
@@ -72,7 +83,7 @@ export default {
         medium: '500px',
         large: '800px',
       }
-      return widthMap[this.width] || this.width
+      return widthMap[this.size] || this.size
     },
     handleOverlayClick() {
       this.close()
