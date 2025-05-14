@@ -1,6 +1,6 @@
 <template>
-  <y-drawer :visible.sync="drawerVisible" v-bind="config">
-    {{ config }}
+  <y-drawer :visible="modeConfig.modeVisible" v-bind="$attrs" @update:visible="close">
+    {{ modeConfig }}
   </y-drawer>
 </template>
 
@@ -15,17 +15,11 @@ export default {
   data() {
     return {}
   },
-  computed: {
-    drawerVisible: {
-      get() {
-        return this.visible
-      },
-      set(value) {
-        this.$emit('update:visible', value)
-      },
+  methods: {
+    close() {
+      this.setModeConfigItem('modeVisible', false)
     },
   },
-  methods: {},
 }
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <y-modal :visible.sync="modalVisible" v-bind="config">{{ config }} </y-modal>
+  <y-modal :visible="modeConfig.modeVisible" v-bind="$attrs" @update:visible="close">{{ modeConfig }} </y-modal>
 </template>
 
 <script>
@@ -13,17 +13,11 @@ export default {
   data() {
     return {}
   },
-  computed: {
-    modalVisible: {
-      get() {
-        return this.visible
-      },
-      set(value) {
-        this.$emit('update:visible', value)
-      },
+  methods: {
+    close() {
+      this.setModeConfigItem('modeVisible', false)
     },
   },
-  methods: {},
 }
 </script>
 

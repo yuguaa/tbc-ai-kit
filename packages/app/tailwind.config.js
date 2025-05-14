@@ -40,15 +40,27 @@ module.exports = {
         {
           '.scrollbar-common': {
             '&::-webkit-scrollbar-track-piece': {
-              background: '#d3dce6',
+              background: 'rgba(0, 0, 0, 0)',
             },
             '&::-webkit-scrollbar': {
               width: '6px',
               height: '6px',
+              'border-radius': '20px',
             },
             '&::-webkit-scrollbar-thumb': {
-              background: '#99a9bf',
+              background: 'rgba(0, 0, 0, 0)',
               'border-radius': '20px',
+            },
+            '&::-webkit-scrollbar-thumb:window-inactive': {
+              background: 'rgba(0, 0, 0, 0)',
+            },
+
+            '&:hover::-webkit-scrollbar-thumb': {
+              background: 'rgba(0, 0, 0, 0.15)',
+            },
+
+            '&:hover::-webkit-scrollbar-thumb:window-inactive': {
+              background: 'rgba(0, 0, 0, 0.2)',
             },
           },
           '.before\\:content-placeholder': {
