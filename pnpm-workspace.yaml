@@ -43,4 +43,4 @@ catalog:
   "@vue/cli-plugin-eslint": ~5.0.0
   "@vue/cli-service": ~5.0.0
   "@21tb/tbc-sse": ^0.0.6
-  
+  "@shikijs/markdown-it": ^3.4.1

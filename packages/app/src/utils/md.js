@@ -8,13 +8,14 @@ import markdownItMark from 'markdown-it-mark'
 import markdownItTaskLists from 'markdown-it-task-lists'
 import markdownItToc from 'markdown-it-toc-done-right'
 import mila from 'markdown-it-link-attributes'
+import Shiki from '@shikijs/markdown-it'
 const md = new MarkdownIt({
   html: true,
   xhtmlOut: true,
   breaks: true,
   langPrefix: 'lang-',
   linkify: false,
-  typographer: true
+  typographer: true,
 })
   .use(emoji)
   .use(markdownItAbbr)
@@ -23,16 +24,23 @@ const md = new MarkdownIt({
   .use(markdownItIns)
   .use(markdownItMark)
   .use(markdownItToc)
-  .use(markdownItTaskLists, { enabled: true })
+  .use(markdownItTaskLists, { enable: true })
   .use(mila, {
     matcher(href) {
       return href.startsWith('https:') || href.startsWith('http:')
     },
     attrs: {
       target: '_blank',
-      rel: 'noopener noreferrer'
-    }
+      rel: 'noopener noreferrer',
+    },
   })
+  .use(
+    await Shiki({
+      themes: {
+        light: 'vitesse-light',
+      },
+    }),
+  )
 // 添加自定义解析规则
 md.core.ruler.push('think', function (state) {
   const tokens = state.tokens

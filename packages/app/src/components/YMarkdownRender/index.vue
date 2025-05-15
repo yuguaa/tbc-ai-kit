@@ -50,6 +50,7 @@ export default {
       }
       for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
+        console.log(`🚀 ~ tokens:`, tokens)
         if (token.type === 'link_open') {
           const linkTokens = []
           let j = i
@@ -69,6 +70,32 @@ export default {
             result.push(vnode)
           }
           i = j // 跳过处理过的 link token
+          continue
+        }
+        if (token.type === 'fence') {
+          const html = md.renderer.render([token], md.options, {})
+          const vnode = h('span', {
+            key: `${keyPrefix}-fence-${i}`,
+            domProps: { innerHTML: html },
+          })
+          if (stack.length) {
+            stack[stack.length - 1].children.push(vnode)
+          } else {
+            result.push(vnode)
+          }
+          continue
+        }
+        if(token.type==='html_inline'){
+          const html = md.renderer.render([token], md.options, {})
+          const vnode = h('span', {
+            key: `${keyPrefix}-html-inline-${i}`,
+            domProps: { innerHTML: html },
+          })
+          if (stack.length) {
+            stack[stack.length - 1].children.push(vnode)
+          } else {
+            result.push(vnode)
+          }
           continue
         }
         if (token.type === 'think') {
@@ -144,7 +171,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import 'github-markdown-css/github-markdown.css';
+@import 'github-markdown-css/github-markdown-light.css';
 .markdown-body {
   font-size: 16px;
   color: #262626;

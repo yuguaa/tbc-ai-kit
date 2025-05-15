@@ -368,7 +368,7 @@ export default {
 }
 .y-layout-content {
   // background-image: url('~@/assets/main.png');
-  background-image: linear-gradient(to bottom, #e8f3ff, white 20%, white);
+  background-image: linear-gradient(to bottom, #e8f3ff, white 10%, white);
   background-size: cover;
 }
 </style>
