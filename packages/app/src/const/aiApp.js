@@ -17,21 +17,21 @@ const AI_APP_PROPS = {
     type: Object,
     default: () => {},
   },
-  sendMsg: {
-    type: Function,
-    default: () => {},
-  },
   prefix: {
     type: String,
     default: '',
   },
-  conversations: {
+  sseResInterceptors: {
     type: Array,
     default: () => [],
   },
-  currentSessionId: {
-    type: String,
-    default: '',
+  sseReqInterceptors: {
+    type: Array,
+    default: () => [],
+  },
+  tbcSSE: {
+    type: Object,
+    default: () => {},
   },
 }
 const APP_MODE_MAP = {

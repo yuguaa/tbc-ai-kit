@@ -107,7 +107,7 @@
                   :class="modeConfig.modeIsFull ? '' : 'y-px-20  y-pr-0'"
                   :style="getMessagesStyle"
                 >
-                  <y-messages :messages="bubbleList"></y-messages>
+                  <y-messages :messages="messages"></y-messages>
                 </div>
               </div>
             </div>
@@ -144,7 +144,9 @@
 </template>
 
 <script>
-import { AI_APP_PROPS } from '@/const/aiApp'
+import deepmerge from 'deepmerge'
+import { APP_NEW_SESSTION_ID, NORMAL_BOX_TYPES, WORK_FLOW_BOX_TYPES, AI_APP_PROPS } from '@/const/aiApp'
+
 import SvgIcon from '@/components/SvgIcon'
 import YConversation from '@/components/YConversation'
 import YPopper from '@/components/YPopper'
@@ -171,10 +173,14 @@ export default {
         deepThink: false,
         useType: 'LOCAL', // LOCAL or SPARK
       },
-      bubbleList: [1, 2, 3],
+      conversations: [],
+      currentSessionId: '',
     }
   },
   computed: {
+    messages() {
+      return this.conversations.find((item) => item.sessionId === this.currentSessionId)?.messages || []
+    },
     getLayoutStyle() {
       if (this.modeConfig.mode === 'modal' || this.modeConfig.mode === 'drawer') {
         return {
@@ -197,11 +203,7 @@ export default {
     },
   },
   mounted() {
-    setInterval(() => {
-      if (this.bubbleList.length < 50) {
-        this.bubbleList.push(this.bubbleList.length + 1)
-      }
-    }, 100)
+    this.subscribeSSEEvents()
   },
   methods: {
     closeSiderbar() {
@@ -235,7 +237,87 @@ export default {
       }
     },
     senderStop() {
-      console.log('senderStop')
+      this.$emit('stop')
+    },
+    // 给sse加订阅
+    subscribeSSEEvents() {
+      // 拦截所有SSE事件
+      const eventTypes = ['onopen', 'onmessage', 'onend', 'onerror', 'oncancel', 'ontimeout', 'onfinally']
+      eventTypes.forEach((eventType) => {
+        this.tbcSSE.subscribe(eventType, (data) => {
+          // 应用响应拦截器
+          const processedData = this.sseResInterceptors.reduce(
+            (acc, interceptor) => interceptor(acc, eventType) || acc,
+            data,
+          )
+          // 根据事件类型调用相应的处理方法
+          this.handleSSEEvent(eventType, processedData)
+        })
+      })
+    },
+    // 处理SSE事件
+    handleSSEEvent(eventType, data) {
+      switch (eventType) {
+        case 'onopen':
+          console.log('SSE连接已打开:', data)
+          break
+        case 'onmessage':
+          console.log('接收到消息:', JSON.stringify(data))
+          break
+        case 'onend':
+          console.log('SSE连接已关闭:', data)
+          break
+        case 'onerror':
+          console.error('SSE发生错误:', data)
+          break
+        case 'oncancel':
+          console.log('SSE请求已取消:', data)
+          break
+        case 'ontimeout':
+          console.warn('SSE请求超时:', data)
+          break
+        case 'onfinally':
+          console.log('SSE请求完成:', data)
+          break
+        default:
+          console.warn(`未知事件类型: ${eventType}`, data)
+      }
+    },
+    // 发送对话消息
+    sendMsg(payload) {
+      payload = deepmerge(this.apiConfig, payload)
+      payload.params.sessionId = this.currentSessionId === APP_NEW_SESSTION_ID ? '' : this.currentSessionId
+      payload.params.inputs.cookie = document.cookie
+      payload.params.inputs.domain_name = this.prefix
+      payload.params.elnSessionId = window.$cookies.get('eln_session_id') || ''
+      payload.url = `https://${this.prefix}` + this.apiConfig.url
+      if (WORK_FLOW_BOX_TYPES.includes(this.apiConfig.params.boxType)) {
+        // 处理工作流类型的请求
+      }
+      if (NORMAL_BOX_TYPES.includes(this.apiConfig.params.boxType)) {
+        // 处理普通类型的请求
+        delete payload.params.inputs
+      }
+      const processedPayload = this.sseReqInterceptors.reduce((acc, interceptor) => interceptor(acc), payload)
+
+      // const currentConversation = this.conversations.find((item) => item.sessionId === this.currentSessionId)
+      // if (!currentConversation) {
+      //   this.conversations.push({
+      //     sessionId: data.sessionId,
+      //     messages: [],
+      //   })
+      // }
+      this.tbcSSE.sendSSE(processedPayload)
+    },
+    // 新增：终止SSE连接的方法
+    terminateSSE() {
+      this.tbcSSE.terminateWorker()
+      console.log('SSE连接已终止')
+    },
+    // 新增：终止请求的方法
+    terminateRequest(abortData) {
+      this.tbcSSE.terminateRequest(abortData)
+      console.log('SSE请求已终止')
     },
   },
 }
