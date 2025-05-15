@@ -5,18 +5,18 @@ import md from '@/utils/md'
 export default {
   name: 'YMdRenderer',
   components: {
-    Think
+    Think,
   },
   props: {
     content: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     tokens() {
       return md.parse(this.content, {})
-    }
+    },
   },
   methods: {
     renderTokens(h, tokens, keyPrefix = '') {
@@ -46,7 +46,7 @@ export default {
         hardbreak: 'br',
         inline: 'span',
         text: 'span',
-        think: Think // 处理 think 标签
+        think: Think, // 处理 think 标签
       }
       for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
@@ -61,7 +61,7 @@ export default {
           const html = md.renderer.render(linkTokens, md.options, {})
           const vnode = h('span', {
             key: `${keyPrefix}-link-${i}`,
-            domProps: { innerHTML: html }
+            domProps: { innerHTML: html },
           })
           if (stack.length) {
             stack[stack.length - 1].children.push(vnode)
@@ -77,10 +77,10 @@ export default {
             {
               class: 'think-inline',
               props: {
-                status: token.meta?.status || 'UN_START'
-              }
+                status: token.meta?.status || 'UN_START',
+              },
             },
-            this.renderTokens(h, md.parse(token.content, {}), `${keyPrefix}-think`)
+            this.renderTokens(h, md.parse(token.content, {}), `${keyPrefix}-think`),
           )
           result.push(vnode)
         } else if (/_open$/.test(token.type)) {
@@ -135,14 +135,21 @@ export default {
         }
       }
       return result
-    }
+    },
   },
   render(h) {
-    return h('div', { class: 'markdown-body y-text-[14px]' }, this.renderTokens(h, this.tokens))
-  }
+    return h('div', { class: 'markdown-body' }, this.renderTokens(h, this.tokens))
+  },
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 @import 'github-markdown-css/github-markdown.css';
+.markdown-body {
+  font-size: 16px;
+  color: #262626;
+  code {
+    display: inline-block;
+  }
+}
 </style>

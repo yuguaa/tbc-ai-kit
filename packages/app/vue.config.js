@@ -24,7 +24,7 @@ module.exports = defineConfig({
   devServer: {
     https: false,
     open: false,
-    proxy: 'https://cloud.21tb.com/'
+    proxy: 'https://test.21tb.com/'
   },
   configureWebpack: config => {
     // 定义路径别名

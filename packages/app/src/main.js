@@ -8,8 +8,8 @@ Vue.config.productionTip = false
 import TbcAiApp from './core'
 
 if (process.env.NODE_ENV === 'development') {
-  window.$cookies.set('corp_code', 'jinj')
-  window.$cookies.set('eln_session_id', 'elnSessionId.b40de8945bca4ea9bcc411882c0dccc3')
+  window.$cookies.set('corp_code', 'shyf17')
+  window.$cookies.set('eln_session_id', 'elnSessionId.501583d3671447508b97f2f0fa09ed82')
 
   // 开发模式下，body margin 0
   document.body.style.margin = '0'

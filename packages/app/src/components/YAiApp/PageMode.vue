@@ -116,7 +116,13 @@
               :class="modeConfig.modeIsFull ? 'y-pb-20' : 'y-px-20  y-pb-20'"
               :style="getMessagesStyle"
             >
-              <y-sender ref="YSender" :sender.sync="sender" @submit="senderSubmit" @stop="senderStop">
+              <y-sender
+                ref="YSender"
+                :sender.sync="sender"
+                :isGenerating="isGenerating"
+                @submit="senderSubmit"
+                @stop="senderStop"
+              >
                 <div v-if="!modeConfig.modeIsFull" class="y-pb-12">
                   <div class="y-flex">
                     <y-button>
@@ -174,10 +180,26 @@ export default {
         useType: 'LOCAL', // LOCAL or SPARK
       },
       conversations: [],
-      currentSessionId: '',
+      currentSessionId: 'APP_NEW_SESSTION_ID',
     }
   },
   computed: {
+    isGenerating() {
+      return this.conversations.some((item) => {
+        return item.sessionId === this.currentSessionId && item.messages.some((message) => message.isGenerating)
+      })
+    },
+    conversationGroup() {
+      return this.conversations.value.reduce((acc, conversation) => {
+        const date = new Date(conversation.createTime)
+        const dateString = date.toISOString().split('T')[0]
+        if (!acc[dateString]) {
+          acc[dateString] = []
+        }
+        acc[dateString].push(conversation)
+        return acc
+      }, {})
+    },
     messages() {
       return this.conversations.find((item) => item.sessionId === this.currentSessionId)?.messages || []
     },
@@ -257,12 +279,16 @@ export default {
     },
     // 处理SSE事件
     handleSSEEvent(eventType, data) {
+      const currentConversation = this.conversations.find((item) => item.sessionId === this.currentSessionId)
+      const lastBubble = currentConversation.messages[currentConversation.messages.length - 1]
+      let parsedData
       switch (eventType) {
         case 'onopen':
-          console.log('SSE连接已打开:', data)
           break
         case 'onmessage':
-          console.log('接收到消息:', JSON.stringify(data))
+          parsedData = JSON.parse(data.event.data)
+          lastBubble.id = parsedData.conversation_id
+          lastBubble.answer += data.data || ''
           break
         case 'onend':
           console.log('SSE连接已关闭:', data)
@@ -278,6 +304,7 @@ export default {
           break
         case 'onfinally':
           console.log('SSE请求完成:', data)
+          lastBubble.isGenerating = false
           break
         default:
           console.warn(`未知事件类型: ${eventType}`, data)
@@ -291,6 +318,7 @@ export default {
       payload.params.inputs.domain_name = this.prefix
       payload.params.elnSessionId = window.$cookies.get('eln_session_id') || ''
       payload.url = `https://${this.prefix}` + this.apiConfig.url
+      console.log(`🚀 ~ payload:`, payload)
       if (WORK_FLOW_BOX_TYPES.includes(this.apiConfig.params.boxType)) {
         // 处理工作流类型的请求
       }
@@ -299,14 +327,23 @@ export default {
         delete payload.params.inputs
       }
       const processedPayload = this.sseReqInterceptors.reduce((acc, interceptor) => interceptor(acc), payload)
+      if (this.currentSessionId === APP_NEW_SESSTION_ID) {
+        //新对话需要添加对话
+        this.conversations.push({
+          sessionId: this.currentSessionId,
+          messages: [],
+          createTime: Date.now(),
+        })
+      }
+      const currentConversation = this.conversations.find((item) => item.sessionId === this.currentSessionId)
+      const newMessage = {
+        question: payload.params.sendMsg,
+        answer: '',
+        id: 'bubble-' + Date.now(),
+        isGenerating: true,
+      }
+      currentConversation.messages.push(newMessage)
 
-      // const currentConversation = this.conversations.find((item) => item.sessionId === this.currentSessionId)
-      // if (!currentConversation) {
-      //   this.conversations.push({
-      //     sessionId: data.sessionId,
-      //     messages: [],
-      //   })
-      // }
       this.tbcSSE.sendSSE(processedPayload)
     },
     // 新增：终止SSE连接的方法
@@ -330,7 +367,8 @@ export default {
   transform: translate(-100%);
 }
 .y-layout-content {
-  background-image: url('~@/assets/main.png');
+  // background-image: url('~@/assets/main.png');
+  background-image: linear-gradient(to bottom, #e8f3ff, white 20%, white);
   background-size: cover;
 }
 </style>
