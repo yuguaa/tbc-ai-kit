@@ -123,6 +123,9 @@ catalogs:
     vue:
       specifier: ^2.6.14
       version: 2.7.16
+    vue-cookies:
+      specifier: ^1.8.6
+      version: 1.8.6
     vue-template-compiler:
       specifier: ^2.6.14
       version: 2.7.16
@@ -182,6 +185,9 @@ importers:
       vue:
         specifier: 'catalog:'
         version: 2.7.16
+      vue-cookies:
+        specifier: 'catalog:'
+        version: 1.8.6
     devDependencies:
       '@babel/core':
         specifier: 'catalog:'
@@ -5158,6 +5164,9 @@ packages:
         optional: true
       yaml:
         optional: true
+
+  vue-cookies@1.8.6:
+    resolution: {integrity: sha512-e2kYaHj1Y/zVsBSM3KWlOoVJ5o3l4QZjytNU7xdCgmkw3521CMUerqHekBGZKXXC1oRxYljBeeOK2SCel6cKuw==}
 
   vue-eslint-parser@8.3.0:
     resolution: {integrity: sha512-dzHGG3+sYwSf6zFBa0Gi9ZDshD7+ad14DGOdTLjruRVgZXe2J+DcZ9iUhyR48z5g1PqRa20yt3Njna/veLJL/g==}
@@ -10722,6 +10731,8 @@ snapshots:
       less: 4.3.0
       terser: 5.39.0
       yaml: 2.7.1
+
+  vue-cookies@1.8.6: {}
 
   vue-eslint-parser@8.3.0(eslint@7.32.0):
     dependencies:

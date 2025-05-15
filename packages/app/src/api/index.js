@@ -1,16 +1,12 @@
-import http from './http'
+import request from '@/utils/http'
 
-/**
- * @description: oss上传文档之后，保存文档的接口
- * @param {*} data
- * @return {*}
- */
-const sendMsgSteam = data => {
-  return http({
-    url: `/gpt/chat/sendMsgSteam`,
+export function gainChatDomain(data) {
+  return request({
+    url: `/gpt/chat/getDomainName`,
     method: 'post',
-    data
+    data,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
   })
 }
-
-export { sendMsgSteam }

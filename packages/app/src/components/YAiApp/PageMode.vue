@@ -116,20 +116,20 @@
               :class="modeConfig.modeIsFull ? 'y-pb-20' : 'y-px-20  y-pb-20'"
               :style="getMessagesStyle"
             >
-              <y-sender>
+              <y-sender ref="YSender" :sender.sync="sender" @submit="senderSubmit" @stop="senderStop">
                 <div v-if="!modeConfig.modeIsFull" class="y-pb-12">
                   <div class="y-flex">
                     <y-button>
                       <template #icon>
                         <svg-icon icon-class="new-chat" />
                       </template>
-                      <span>切换企业知识库</span>
+                      <span>创建新对话</span>
                     </y-button>
                     <y-button class="y-ml-12">
                       <template #icon>
                         <svg-icon icon-class="history" />
                       </template>
-                      <span>上网搜索</span>
+                      <span>历史对话记录</span>
                     </y-button>
                   </div>
                 </div>
@@ -139,6 +139,7 @@
         </div>
       </div>
     </div>
+    <YMessage ref="YMessage" />
   </div>
 </template>
 
@@ -150,6 +151,7 @@ import YPopper from '@/components/YPopper'
 import YMessages from '@/components/YMessages'
 import YSender from '@/components/YSender'
 import YButton from '@/components/YButton'
+import YMessage from '@/components/YMessage'
 export default {
   name: 'YLayout',
   components: {
@@ -159,10 +161,16 @@ export default {
     YMessages,
     YSender,
     YButton,
+    YMessage,
   },
   props: AI_APP_PROPS,
   data() {
     return {
+      sender: {
+        content: '',
+        deepThink: false,
+        useType: 'LOCAL', // LOCAL or SPARK
+      },
       bubbleList: [1, 2, 3],
     }
   },
@@ -182,7 +190,6 @@ export default {
     },
     getMessagesStyle() {
       if (this.modeConfig.modeIsFull) {
-        console.log(`🚀 ~ this.modeConfig.modeFull:`, this.modeConfig.modeFull.messages)
         return this.modeConfig.modeFull.messages
       } else {
         return this.modeConfig.modeNormal.messages
@@ -208,6 +215,27 @@ export default {
     },
     toggleScreen() {
       this.setModeConfigItem('modeIsFull', !this.modeConfig.modeIsFull)
+    },
+    senderSubmit() {
+      if (this.sender.content.trim() !== '') {
+        this.$refs.YSender.clear()
+        const params = {
+          sendMsg: this.sender.content,
+          types: this.sender.useType,
+          resourceType: '',
+          resourceId: '',
+          convId: '',
+          inputs: {
+            question: this.sender.content,
+          },
+        }
+        this.sendMsg({ params })
+      } else {
+        this.$refs.YMessage.addMessage('请先填写内容', 'warning')
+      }
+    },
+    senderStop() {
+      console.log('senderStop')
     },
   },
 }

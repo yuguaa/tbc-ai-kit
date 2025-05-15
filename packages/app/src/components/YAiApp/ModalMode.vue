@@ -20,10 +20,8 @@ export default {
   computed: {
     getModalStyle() {
       if (this.modeConfig.modeIsFull) {
-        console.log(`🚀 ~ this.modeConfig.modeFull[this.modeConfig.mode]:`, this.modeConfig.modeFull[this.modeConfig.mode])
         return this.modeConfig.modeFull[this.modeConfig.mode]
       } else {
-        console.log(`🚀 ~ this.modeConfig.modeFull[this.modeConfig.mode]:`, this.modeConfig.modeNormal[this.modeConfig.mode])
         return this.modeConfig.modeNormal[this.modeConfig.mode]
       }
     },

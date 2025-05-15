@@ -5,7 +5,7 @@
       <div class="qa-sender__input">
         <input-area
           ref="inputRef"
-          v-model="senderContent.content"
+          v-model="msg"
           :placeholder="'请输入文字内容'"
           @focus="onFocus"
           @enter="onSubmit"
@@ -13,22 +13,51 @@
       </div>
       <div class="qa-sender__btns">
         <div class="qa-sender__actions">
-          <y-button type="select" v-model="senderContent.useKnowledge">
+          <y-button type="select" v-model="deepThink">
             <template #icon>
-              <svg-icon icon-class="controlplatform" />
+              <svg-icon icon-class="deep-think" />
             </template>
-            <span>切换企业知识库</span>
-          </y-button>
-          <y-button class="y-ml-12" type="select" v-model="senderContent.useInternet">
-            <template #icon>
-              <svg-icon icon-class="internet" />
-            </template>
-            <span>上网搜索</span>
+            <span>深度思考</span>
           </y-button>
         </div>
-        <div class="qa-sender__submit">
-          <svg-icon icon-class="pause" v-if="isGenerating" />
-          <svg-icon icon-class="sending" v-else />
+        <div class="y-flex y-flex-1 y-items-center y-justify-end y-px-12 y-text-right">
+          <y-popper
+            mode="light"
+            :visibleArrow="false"
+            :options="{
+              placement: 'top',
+              modifiers: { offset: { offset: '0,0' } },
+            }"
+          >
+            <div class="y-flex y-flex-col y-p-8 y-shadow-custom">
+              <div
+                @click="change('LOCAL')"
+                class="y-cursor-pointer y-rounded-[4px] y-px-12 y-py-[5px] y-text-[14px] hover:y-bg-borderLight"
+                :class="[sender.useType === 'LOCAL' ? 'y-bg-second y-text-main' : 'y-text-mainText']"
+              >
+                企业知识库答案
+              </div>
+              <div
+                @click="change('SPARK')"
+                class="y-cursor-pointer y-rounded-[4px] y-px-12 y-py-[5px] y-text-[14px] hover:y-bg-borderLight"
+                :class="[sender.useType === 'SPARK' ? 'y-bg-second y-text-main' : 'y-text-mainText']"
+              >
+                AI认知模型答案
+              </div>
+            </div>
+            <span slot="reference" class="y-mr-16 y-box-border y-flex y-rounded-[4px] y-p-4 hover:y-bg-borderLight">
+              <svg-icon class="y-cursor-pointer" icon-class="setup"></svg-icon>
+            </span>
+          </y-popper>
+          <div class="y-h-16 y-w-1 y-bg-borderDark"></div>
+        </div>
+        <div>
+          <div class="qa-sender__submit" v-if="isGenerating">
+            <svg-icon icon-class="pause" @click="onStop" />
+          </div>
+          <div class="qa-sender__submit" :class="{ disabled: !this.sender.content.trim() }" v-else>
+            <svg-icon icon-class="sending" @click="onSubmit" />
+          </div>
         </div>
       </div>
     </div>
@@ -39,11 +68,13 @@
 import SvgIcon from '@/components/SvgIcon'
 import YButton from '@/components/YButton'
 import InputArea from './InputArea.vue'
+import YPopper from '@/components/YPopper'
 export default {
   components: {
     SvgIcon,
     YButton,
     InputArea,
+    YPopper,
   },
   props: {
     isGenerating: {
@@ -54,26 +85,61 @@ export default {
       type: String,
       default: '',
     },
+    sender: {
+      type: Object,
+      default: () => {
+        return {
+          content: '',
+          deepThink: false,
+          useType: 'LOCAL', // LOCAL or SPARK
+        }
+      },
+    },
   },
   data() {
     return {
-      senderContent: {
-        content: '',
-        useInternet: false,
-        useKnowledge: false,
-      },
       isFocus: false,
     }
   },
+  computed: {
+    deepThink: {
+      get() {
+        return this.sender.deepThink
+      },
+      set(value) {
+        this.$emit('update:sender', {
+          ...this.sender,
+          deepThink: value,
+        })
+      },
+    },
+    msg: {
+      get() {
+        return this.sender.content
+      },
+      set(value) {
+        this.$emit('update:sender', {
+          ...this.sender,
+          content: value,
+        })
+      },
+    },
+  },
   methods: {
+    change(type) {
+      this.$emit('update:sender', {
+        ...this.sender,
+        useType: type,
+      })
+    },
     onFocus(focus) {
       this.isFocus = focus
     },
+    clear() {
+      this.$refs.inputRef.clear()
+    },
     onSubmit() {
-      if (this.senderContent.content.trim() !== '') {
-        this.$refs.inputRef.clear()
-        this.$emit('submit', this.senderContent)
-      }
+      this.$emit('submit')
     },
     onStop() {
       this.$emit('stop')
@@ -131,10 +197,10 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 32px;
     /* margin-top: 20px; */
   }
   .qa-sender__actions {
-    flex: 1;
     display: flex;
     align-items: center;
   }
@@ -172,9 +238,20 @@ export default {
     transition: all 0.3s;
     cursor: pointer;
     color: #bfbfbf;
-    font-size: 32px;
+    height: 32px;
+    width: 32px;
+    ::v-deep {
+      svg {
+        width: 32px;
+        height: 32px;
+      }
+    }
     &:hover {
       color: #1159ff;
+    }
+    &.disabled {
+      color: #bfbfbf;
+      pointer-events: none;
     }
   }
 }
