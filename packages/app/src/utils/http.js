@@ -18,7 +18,10 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const res = response.data
-    return res
+    if (res.code === 1001) {
+      return res
+    }
+    return Promise.reject(response.data)
   },
   (error) => {
     return Promise.reject(error)

@@ -9,6 +9,7 @@ import {
   // NORMAL_BOX_TYPES,
   // WORK_FLOW_BOX_TYPES,
   getApiConfigByConfig,
+  getConversationApiConfig,
 } from '@/const/aiApp'
 import { gainChatDomain } from '@/api'
 class TbcAiApp {
@@ -29,6 +30,10 @@ class TbcAiApp {
       },
       timeout: 1000 * 60 * 3,
     },
+    conversationApiConfig = {
+      mode: '',
+      pageSize: 20,
+    },
   }) {
     if (!target) {
       const app = document.createElement('div')
@@ -36,34 +41,42 @@ class TbcAiApp {
       document.body.appendChild(app)
       target = `#${APP_DEFAULT_TARGET_DOM}`
     }
+    this.conversationApiConfig = conversationApiConfig
     this.modeConfig = deepmerge(DEFAULT_MODE_CONFIG, modeConfig)
     this.apiConfig = getApiConfigByConfig(apiConfig)
-    gainChatDomain().then(({ bizResult }) => {
-      this.prefix = bizResult
-      const provider = {
-        modeConfig: this.modeConfig,
-        setModeConfig: this.setModeConfig.bind(this),
-        setModeConfigItem: this.setModeConfigItem.bind(this),
-        apiConfig: this.apiConfig,
-        prefix: this.prefix,
-        sseReqInterceptors: this.sseReqInterceptors,
-        sseResInterceptors: this.sseResInterceptors,
-        tbcSSE: this.tbcSSE,
-      }
-      this.vm = new Vue({
-        data() {
-          return provider
-        },
-        mounted() {},
-        methods: {},
-        render(h) {
-          return h(YAiApp, {
-            props: this.$data,
-            attrs: this.$data,
-          })
-        },
-      }).$mount(target)
-    })
+    this.conversationApi = getConversationApiConfig(apiConfig, this.conversationApiConfig)
+    gainChatDomain()
+      .then(({ bizResult }) => {
+        this.prefix = bizResult
+        const provider = {
+          modeConfig: this.modeConfig,
+          setModeConfig: this.setModeConfig.bind(this),
+          setModeConfigItem: this.setModeConfigItem.bind(this),
+          apiConfig: this.apiConfig,
+          prefix: this.prefix,
+          sseReqInterceptors: this.sseReqInterceptors,
+          sseResInterceptors: this.sseResInterceptors,
+          tbcSSE: this.tbcSSE,
+          conversationApi: this.conversationApi,
+          conversationApiConfig: this.conversationApiConfig,
+        }
+        this.vm = new Vue({
+          data() {
+            return provider
+          },
+          mounted() {},
+          methods: {},
+          render(h) {
+            return h(YAiApp, {
+              props: this.$data,
+              attrs: this.$data,
+            })
+          },
+        }).$mount(target)
+      })
+      .catch((err) => {
+        console.error('获取域名失败', err)
+      })
   }
   // 请求拦截器
   useRequestInterceptor(interceptor) {

@@ -30,13 +30,19 @@
             </div>
           </div>
           <div class="y-layout-sidebar-content y-overflow-auto y-p-20 y-scrollbar-common">
-            <y-conversation :showIcon="!modeConfig.modeIsFull" :showBack="!modeConfig.modeIsFull" />
+            <y-conversations
+              :showIcon="!modeConfig.modeIsFull"
+              :showBack="!modeConfig.modeIsFull"
+              :conversations="conversations"
+              :value="currentSessionId"
+              @go="changeSession"
+            />
           </div>
         </div>
       </div>
       <div
-        class="y-layout-main y-box-border y-flex y-h-full y-flex-1 y-flex-col y-overflow-hidden"
-        :class="modeConfig.modeIsFull ? 'y-p-8' : ''"
+        class="y-layout-main y-box-border y-flex y-h-full y-flex-1 y-flex-col y-overflow-hidden y-transition-all y-duration-300"
+        :class="modeConfig.modeIsFull ? 'y-p-8 y-pl-0' : ''"
       >
         <div class="y-layout-content y-flex y-flex-1 y-flex-col y-overflow-hidden y-rounded-[8px]">
           <div
@@ -59,7 +65,7 @@
                   </span>
                 </y-popper>
               </template>
-              <div class="y-select-text y-text-[16px] y-font-[600]">当前对话的标题</div>
+              <div class="y-select-text y-text-[16px] y-font-[600]">{{ currentConversationName }}</div>
             </div>
             <div class="y-flex y-items-center y-text-[16px]" v-else>
               <span>AI智能助手</span>
@@ -86,6 +92,9 @@
                   ></svg-icon>
                 </span>
               </y-popper>
+              <span class="y-p-4">
+                <svg-icon class="y-cursor-pointer" icon-class="close"></svg-icon>
+              </span>
               <div class="y-flex y-h-28 y-w-28 y-items-center y-justify-center y-rounded-full">
                 <img
                   class="y-h-28 y-w-28 y-rounded-full y-bg-borderDark"
@@ -96,51 +105,80 @@
               </div>
             </div>
           </div>
-          <div class="y-box-border y-flex y-flex-1 y-flex-col y-items-center">
-            <div class="y-relative y-box-border y-flex y-w-full y-flex-1 y-flex-col y-items-center y-overflow-hidden">
-              <div
-                class="y-absolute y-bottom-0 y-right-0 y-top-0 y-box-border y-flex y-h-full y-w-full y-flex-col-reverse y-items-center y-overflow-hidden y-overflow-y-auto y-scrollbar-common"
-              >
-                <div class="y-messages-holder y-flex-1"></div>
+          <div class="y-page-main y-relative y-box-border y-flex y-flex-1 y-flex-col y-items-center">
+            <template>
+              <div class="y-relative y-box-border y-flex y-w-full y-flex-1 y-flex-col y-items-center y-overflow-hidden">
                 <div
-                  class="y-box-border y-flex y-flex-col"
-                  :class="modeConfig.modeIsFull ? '' : 'y-px-20  y-pr-0'"
-                  :style="getMessagesStyle"
+                  class="y-absolute y-bottom-0 y-right-0 y-top-0 y-box-border y-flex y-h-full y-w-full y-flex-col-reverse y-items-center y-overflow-hidden y-overflow-y-auto y-scrollbar-common"
                 >
-                  <y-messages :messages="messages"></y-messages>
-                </div>
-              </div>
-            </div>
-            <div
-              class="y-box-border"
-              :class="modeConfig.modeIsFull ? 'y-pb-20' : 'y-px-20  y-pb-20'"
-              :style="getMessagesStyle"
-            >
-              <y-sender
-                ref="YSender"
-                :sender.sync="sender"
-                :isGenerating="isGenerating"
-                @submit="senderSubmit"
-                @stop="senderStop"
-              >
-                <div v-if="!modeConfig.modeIsFull" class="y-pb-12">
-                  <div class="y-flex">
-                    <y-button>
-                      <template #icon>
-                        <svg-icon icon-class="new-chat" />
-                      </template>
-                      <span>创建新对话</span>
-                    </y-button>
-                    <y-button class="y-ml-12">
-                      <template #icon>
-                        <svg-icon icon-class="history" />
-                      </template>
-                      <span>历史对话记录</span>
-                    </y-button>
+                  <div class="y-messages-holder y-flex-1"></div>
+                  <div
+                    class="y-box-border y-flex y-flex-col"
+                    :class="modeConfig.modeIsFull ? '' : 'y-px-20'"
+                    :style="getMessagesStyle"
+                  >
+                    <y-messages :messages="messages"></y-messages>
                   </div>
                 </div>
-              </y-sender>
-            </div>
+              </div>
+              <div
+                class="y-box-border"
+                :class="modeConfig.modeIsFull ? 'y-pb-20' : 'y-px-20  y-pb-20'"
+                :style="getMessagesStyle"
+              >
+                <y-sender
+                  ref="YSender"
+                  :sender.sync="sender"
+                  :isGenerating="isGenerating"
+                  @submit="senderSubmit"
+                  @stop="senderStop"
+                >
+                  <div v-if="!modeConfig.modeIsFull" class="y-pb-12">
+                    <div class="y-flex">
+                      <y-button>
+                        <template #icon>
+                          <svg-icon icon-class="new-chat" />
+                        </template>
+                        <span>创建新对话</span>
+                      </y-button>
+                      <y-button
+                        class="y-ml-12"
+                        @click="
+                          () => {
+                            showMiniConversations = true
+                          }
+                        "
+                      >
+                        <template #icon>
+                          <svg-icon icon-class="history" />
+                        </template>
+                        <span>历史对话记录</span>
+                      </y-button>
+                    </div>
+                  </div>
+                </y-sender>
+              </div>
+            </template>
+            <transition name="y-conversations-mini">
+              <div
+                v-if="!modeConfig.modeIsFull && showMiniConversations"
+                class="y-absolute y-box-border y-flex y-h-full y-w-full y-flex-1 y-flex-col y-items-center y-overflow-hidden y-bg-white"
+              >
+                <div
+                  class="y-conversations-mini-content y-absolute y-bottom-0 y-right-0 y-top-0 y-box-border y-flex y-h-full y-w-full y-flex-col y-items-center y-overflow-hidden y-overflow-y-auto y-p-20 y-scrollbar-common"
+                >
+                  <!-- 非全屏状态下的conversations -->
+                  <y-conversations
+                    :showIcon="!modeConfig.modeIsFull"
+                    :showBack="!modeConfig.modeIsFull"
+                    :conversations="conversations"
+                    :value="currentSessionId"
+                    @back="showMiniConversations = false"
+                    @go="changeSession"
+                  />
+                </div>
+              </div>
+            </transition>
           </div>
         </div>
       </div>
@@ -154,7 +192,7 @@ import deepmerge from 'deepmerge'
 import { APP_NEW_SESSTION_ID, NORMAL_BOX_TYPES, WORK_FLOW_BOX_TYPES, AI_APP_PROPS } from '@/const/aiApp'
 
 import SvgIcon from '@/components/SvgIcon'
-import YConversation from '@/components/YConversation'
+import YConversations from '@/components/YConversations'
 import YPopper from '@/components/YPopper'
 import YMessages from '@/components/YMessages'
 import YSender from '@/components/YSender'
@@ -164,7 +202,7 @@ export default {
   name: 'YLayout',
   components: {
     SvgIcon,
-    YConversation,
+    YConversations,
     YPopper,
     YMessages,
     YSender,
@@ -180,25 +218,22 @@ export default {
         useType: 'LOCAL', // LOCAL or SPARK
       },
       conversations: [],
-      currentSessionId: 'APP_NEW_SESSTION_ID',
+      currentSessionId: APP_NEW_SESSTION_ID,
+      currentConversation: {},
+      page: {
+        pageSize: 0,
+        pageNum: 1,
+      },
+      pageCount: 0,
+      defaultPageSize: 30,
+      showMiniConversations: false,
     }
   },
   computed: {
     isGenerating() {
       return this.conversations.some((item) => {
-        return item.sessionId === this.currentSessionId && item.messages.some((message) => message.isGenerating)
+        return item && item.messages && item.messages.some((message) => message && message.isGenerating)
       })
-    },
-    conversationGroup() {
-      return this.conversations.value.reduce((acc, conversation) => {
-        const date = new Date(conversation.createTime)
-        const dateString = date.toISOString().split('T')[0]
-        if (!acc[dateString]) {
-          acc[dateString] = []
-        }
-        acc[dateString].push(conversation)
-        return acc
-      }, {})
     },
     messages() {
       return this.conversations.find((item) => item.sessionId === this.currentSessionId)?.messages || []
@@ -223,11 +258,37 @@ export default {
         return this.modeConfig.modeNormal.messages
       }
     },
+    currentConversationName() {
+      return this.currentConversation.sessionName
+    },
   },
   mounted() {
+    this.page.pageSize = this.modeConfig.pageSize || this.defaultPageSize
     this.subscribeSSEEvents()
+    this.getConversationList()
   },
   methods: {
+    getConversationList() {
+      const params = {
+        boxType: this.apiConfig.params.boxType,
+      }
+      if (this.modeConfig.historyType === 'limit') {
+        //限制获取30条
+      }
+      if (this.modeConfig.historyType === 'page') {
+        //分页获取
+        this.pageCount++
+        params.pageNum = this.page.pageSize * this.pageCount
+      }
+      this.conversationApi(params)
+        .then(({ bizResult }) => {
+          this.conversations = bizResult
+        })
+        .catch((err) => {
+          console.error(err)
+          this.$refs.YMessage.addMessage('获取对话列表失败', 'error')
+        })
+    },
     closeSiderbar() {
       this.setModeConfigItem('modeShowSidebar', false)
     },
@@ -259,7 +320,7 @@ export default {
       }
     },
     senderStop() {
-      this.$emit('stop')
+      this.tbcSSE.terminateRequest(JSON.stringify({ close: true }))
     },
     // 给sse加订阅
     subscribeSSEEvents() {
@@ -279,8 +340,7 @@ export default {
     },
     // 处理SSE事件
     handleSSEEvent(eventType, data) {
-      const currentConversation = this.conversations.find((item) => item.sessionId === this.currentSessionId)
-      const lastBubble = currentConversation.messages[currentConversation.messages.length - 1]
+      const lastBubble = this.currentConversation.messages[this.currentConversation.messages.length - 1]
       let parsedData
       switch (eventType) {
         case 'onopen':
@@ -312,13 +372,13 @@ export default {
     },
     // 发送对话消息
     sendMsg(payload) {
+      this.senderStop()
       payload = deepmerge(this.apiConfig, payload)
       payload.params.sessionId = this.currentSessionId === APP_NEW_SESSTION_ID ? '' : this.currentSessionId
       payload.params.inputs.cookie = document.cookie
       payload.params.inputs.domain_name = this.prefix
       payload.params.elnSessionId = window.$cookies.get('eln_session_id') || ''
       payload.url = `https://${this.prefix}` + this.apiConfig.url
-      console.log(`🚀 ~ payload:`, payload)
       if (WORK_FLOW_BOX_TYPES.includes(this.apiConfig.params.boxType)) {
         // 处理工作流类型的请求
       }
@@ -329,33 +389,43 @@ export default {
       const processedPayload = this.sseReqInterceptors.reduce((acc, interceptor) => interceptor(acc), payload)
       if (this.currentSessionId === APP_NEW_SESSTION_ID) {
         //新对话需要添加对话
-        this.conversations.push({
-          sessionId: this.currentSessionId,
-          messages: [],
-          createTime: Date.now(),
-        })
+        const hasNewConversation = this.conversations.some((item) => item.sessionId === APP_NEW_SESSTION_ID)
+        if (!hasNewConversation) {
+          this.conversations.push({
+            sessionId: APP_NEW_SESSTION_ID,
+            sessionName: payload.params.sendMsg,
+            messages: [],
+            createTime: Date.now(),
+          })
+        }
       }
-      const currentConversation = this.conversations.find((item) => item.sessionId === this.currentSessionId)
+      this.currentConversation = this.conversations.find((item) => item.sessionId === this.currentSessionId)
+      console.log(`🚀 ~ this.currentConversation:`, this.currentConversation)
       const newMessage = {
         question: payload.params.sendMsg,
         answer: '',
         id: 'bubble-' + Date.now(),
         isGenerating: true,
       }
-      currentConversation.messages.push(newMessage)
+      this.currentConversation.messages.push(newMessage)
 
       this.tbcSSE.sendSSE(processedPayload)
     },
     // 新增：终止SSE连接的方法
     terminateSSE() {
       this.tbcSSE.terminateWorker()
-      console.log('SSE连接已终止')
+      console.log('SSE WORKER 连接已终止')
     },
-    // 新增：终止请求的方法
-    terminateRequest(abortData) {
-      this.tbcSSE.terminateRequest(abortData)
-      console.log('SSE请求已终止')
+    changeSession({ sessionId }) {
+      if (sessionId === this.currentSessionId) {
+        return
+      }
+      this.showMiniConversations = false
+      this.currentSessionId = sessionId
+      this.currentConversation = this.conversations.find((item) => item.sessionId === sessionId)
+      this.getConversationMessages()
     },
+    getConversationMessages() {},
   },
 }
 </script>
@@ -370,5 +440,30 @@ export default {
   // background-image: url('~@/assets/main.png');
   background-image: linear-gradient(to bottom, #e8f3ff, white 10%, white);
   background-size: cover;
+}
+
+.y-conversations-mini-enter-active,
+.y-conversations-mini-leave-active {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.y-conversations-mini-enter,
+.y-conversations-mini-leave-to {
+  opacity: 0;
+}
+
+.y-conversations-mini-enter .y-conversations-mini-content,
+.y-conversations-mini-leave-to .y-conversations-mini-content {
+  transform: translateX(100%);
+}
+
+.y-conversations-mini-enter-active .y-conversations-mini-content,
+.y-conversations-mini-leave-active .y-conversations-mini-content {
+  transition: transform 0.3s ease-in-out;
+}
+
+.y-conversations-mini-content {
+  box-sizing: border-box;
+  transition: transform 0.3s ease-in-out;
 }
 </style>

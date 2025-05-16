@@ -10,3 +10,19 @@ export function gainChatDomain(data) {
     },
   })
 }
+
+export function queryChatPageList(data) {
+  return request({
+    url: `/gpt/chatLog/queryChatPageList`,
+    method: 'post',
+    data,
+  })
+}
+
+export function queryChatListLimit(data) {
+  return request({
+    url: `/gpt/chatLog/queryChatListLimit`,
+    method: 'post',
+    data,
+  })
+}

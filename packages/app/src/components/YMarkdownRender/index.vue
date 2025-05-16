@@ -50,7 +50,6 @@ export default {
       }
       for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
-        console.log(`🚀 ~ tokens:`, tokens)
         if (token.type === 'link_open') {
           const linkTokens = []
           let j = i

@@ -1,5 +1,5 @@
 import deepmerge from 'deepmerge'
-
+import { queryChatListLimit, queryChatPageList } from '@/api/index.js'
 const AI_APP_PROPS = {
   modeConfig: {
     type: Object,
@@ -30,6 +30,13 @@ const AI_APP_PROPS = {
     default: () => [],
   },
   tbcSSE: {
+    type: Object,
+    default: () => {},
+  },
+  conversationApi: {
+    type: Function,
+  },
+  conversationApiConfig: {
     type: Object,
     default: () => {},
   },
@@ -127,8 +134,12 @@ const NORMAL_API_INTERFACE = {
   timeout: API_TIMEOUT,
 }
 
-const WORK_FLOW_BOX_TYPES = ['AT_017']
+const WORK_FLOW_BOX_TYPES = ['AT_017', 'TC_045']
 const NORMAL_BOX_TYPES = ['AT_004']
+
+const HISTROY_LIST_LIMIT_TYPES = ['AT_017']
+const HISTROY_PAGE_TYPES = ['TC_045']
+
 const APP_NEW_SESSTION_ID = 'APP_NEW_SESSTION_ID'
 const APP_DEFAULT_TARGET_DOM = 'APP_DEFAULT_TARGET_DOM'
 
@@ -141,6 +152,22 @@ const getApiConfigByConfig = (config) => {
   }
   console.log(`没有匹配到 boxType`)
   return config
+}
+const getConversationApiConfig = (config, conversationApiConfig) => {
+  if (conversationApiConfig.mode === 'limit') {
+    return queryChatListLimit
+  }
+  if (conversationApiConfig.mode === 'page') {
+    return queryChatPageList
+  }
+  if (HISTROY_LIST_LIMIT_TYPES.includes(config.params.boxType)) {
+    conversationApiConfig.mode = 'limit'
+    return queryChatListLimit
+  }
+  if (HISTROY_PAGE_TYPES.includes(config.params.boxType)) {
+    conversationApiConfig.mode = 'page'
+    return queryChatPageList
+  }
 }
 export {
   AI_APP_PROPS,
@@ -155,4 +182,5 @@ export {
   WORK_FLOW_BOX_TYPES,
   NORMAL_BOX_TYPES,
   getApiConfigByConfig,
+  getConversationApiConfig,
 }

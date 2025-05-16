@@ -9,7 +9,7 @@ import TbcAiApp from './core'
 
 if (process.env.NODE_ENV === 'development') {
   window.$cookies.set('corp_code', 'shyf17')
-  window.$cookies.set('eln_session_id', 'elnSessionId.30d1187824ef407aa78dedd2a9d338ae')
+  window.$cookies.set('eln_session_id', 'elnSessionId.4a7b29c7c95e4245afbf24bb65af5cac')
 
   // 开发模式下，body margin 0
   document.body.style.margin = '0'
@@ -26,7 +26,7 @@ if (process.env.NODE_ENV === 'development') {
         },
         modalConfig: {
           mode: 'modal',
-          modeVisible: false,
+          modeVisible: true,
           modeShowSidebar: true,
           modeIsFull: false,
         },

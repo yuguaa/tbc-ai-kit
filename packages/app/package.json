@@ -2,6 +2,7 @@
   "name": "@tbc-ai-kit/app",
   "version": "0.1.0",
   "main": "tbc-ai-app.js",
+  "author": "yuanzhenjiang",
   "private": true,
   "scripts": {
     "dev": "vue-cli-service serve",

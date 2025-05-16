@@ -36,6 +36,8 @@ export default {
     handleClick() {
       if (this.type === 'select') {
         this.$emit('input', !this.value)
+      } else {
+        this.$emit('click')
       }
     },
   },
