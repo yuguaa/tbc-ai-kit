@@ -1,20 +1,20 @@
 <template>
   <div
-    class="y-layout y-relative y-box-border y-flex y-h-full y-w-full y-flex-col y-bg-[#F5F7FB] y-text-mainText y-transition-all y-duration-300"
+    class="y-layout y-relative y-m-auto y-box-border y-flex y-h-full y-w-full y-flex-col y-bg-[#F5F7FB] y-text-mainText y-transition-all y-duration-300"
     :style="getLayoutStyle"
   >
     <div class="y-layout-container y-flex y-h-full y-flex-1 y-overflow-hidden">
       <div
-        v-if="modeConfig.modeIsFull"
+        v-if="modeConfig.isFullMode"
         :class="[
           'y-layout-sidebar y-h-full  y-shrink-0 y-flex-col y-transition-all y-duration-300',
-          !modeConfig.modeShowSidebar ? 'y-w-0' : 'y-w-[280px]',
+          !modeConfig.isShowSidebar ? 'y-w-0' : 'y-w-[280px]',
         ]"
       >
         <div
           class="y-relative y-flex y-h-full y-w-[280px] y-shrink-0 y-flex-col y-transition-all y-duration-300"
           :class="{
-            'y-sidebar-main': !modeConfig.modeShowSidebar,
+            'y-sidebar-main': !modeConfig.isShowSidebar,
           }"
         >
           <div class="y-layout-sidebar-header y-shrink-0 y-px-20">
@@ -32,8 +32,8 @@
           </div>
           <div v-if="conversations.length" class="y-layout-sidebar-content y-overflow-auto y-p-20 y-scrollbar-common">
             <y-conversations
-              :showIcon="!modeConfig.modeIsFull"
-              :showBack="!modeConfig.modeIsFull"
+              :showIcon="!modeConfig.isFullMode"
+              :showBack="!modeConfig.isFullMode"
               :conversations="conversations"
               :value="currentSessionId"
               @go="changeSession"
@@ -44,14 +44,14 @@
       </div>
       <div
         class="y-layout-main y-box-border y-flex y-h-full y-flex-1 y-flex-col y-overflow-hidden y-transition-all y-duration-300"
-        :class="modeConfig.modeIsFull ? 'y-p-8 y-pl-0' : ''"
+        :class="modeConfig.isFullMode ? 'y-p-8 y-pl-0' : ''"
       >
         <div class="y-layout-content y-flex y-flex-1 y-flex-col y-overflow-hidden y-rounded-[8px]">
           <div
             class="y-layout-header y-box-border y-flex y-h-52 y-shrink-0 y-select-none y-items-center y-justify-between y-px-20 y-py-12 y-text-[20px]"
           >
-            <div class="y-flex y-items-center y-gap-12" v-if="modeConfig.modeIsFull">
-              <template v-if="!modeConfig.modeShowSidebar">
+            <div class="y-flex y-items-center y-gap-12" v-if="modeConfig.isFullMode">
+              <template v-if="!modeConfig.isShowSidebar">
                 <span class="y-p-4">
                   <svg-icon class="y-cursor-pointer" icon-class="leftside" @click="openSiderbar"></svg-icon>
                 </span>
@@ -77,12 +77,13 @@
                 <svg-icon class="y-cursor-pointer" icon-class="more"></svg-icon>
               </span>
               <y-popper
+                v-if="modeConfig.showHeaderToggleScreenIcon"
                 :options="{
                   placement: 'bottom',
                   modifiers: { offset: { offset: '0,5px' } },
                 }"
               >
-                <span>{{ modeConfig.modeIsFull ? '小屏幕' : '全屏' }}</span>
+                <span>{{ modeConfig.isFullMode ? '小屏幕' : '全屏' }}</span>
                 <span
                   slot="reference"
                   class="y-box-border y-flex y-rounded-[4px] y-p-4 hover:y-bg-borderLight"
@@ -90,14 +91,17 @@
                 >
                   <svg-icon
                     class="y-cursor-pointer"
-                    :icon-class="modeConfig.modeIsFull ? 'launchscreen' : 'fullscreen'"
+                    :icon-class="modeConfig.isFullMode ? 'launchscreen' : 'fullscreen'"
                   ></svg-icon>
                 </span>
               </y-popper>
-              <span class="y-p-4" v-if="modeConfig.mode === 'modal' || modeConfig.mode === 'drawer'">
+              <span class="y-p-4" v-if="modeConfig.showHeaderCloseIcon">
                 <svg-icon class="y-cursor-pointer" icon-class="close" @click="closePage"></svg-icon>
               </span>
-              <div class="y-flex y-h-28 y-w-28 y-items-center y-justify-center y-rounded-full">
+              <div
+                v-if="modeConfig.showHeaderAvatarIcon"
+                class="y-flex y-h-28 y-w-28 y-items-center y-justify-center y-rounded-full"
+              >
                 <img
                   class="y-h-28 y-w-28 y-rounded-full y-bg-borderDark"
                   src="https://www.picsum.photos/100/100"
@@ -116,7 +120,7 @@
                   <div class="y-messages-holder y-flex-1"></div>
                   <div
                     class="y-box-border y-flex y-flex-col"
-                    :class="modeConfig.modeIsFull ? '' : 'y-px-20'"
+                    :class="modeConfig.isFullMode ? '' : 'y-px-20'"
                     :style="getMessagesStyle"
                   >
                     <y-messages :messages="messages"></y-messages>
@@ -125,7 +129,7 @@
               </div>
               <div
                 class="y-box-border"
-                :class="modeConfig.modeIsFull ? 'y-pb-20' : 'y-px-20  y-pb-20'"
+                :class="modeConfig.isFullMode ? 'y-pb-20' : 'y-px-20  y-pb-20'"
                 :style="getMessagesStyle"
               >
                 <y-sender
@@ -135,7 +139,7 @@
                   @submit="senderSubmit"
                   @stop="stopSendMsg"
                 >
-                  <div v-if="!modeConfig.modeIsFull" class="y-pb-12">
+                  <div v-if="!modeConfig.isFullMode" class="y-pb-12">
                     <div class="y-flex">
                       <y-button>
                         <template #icon>
@@ -163,7 +167,7 @@
             </template>
             <transition name="y-conversations-mini">
               <div
-                v-if="!modeConfig.modeIsFull && showMiniConversations"
+                v-if="!modeConfig.isFullMode && showMiniConversations"
                 class="y-absolute y-box-border y-flex y-h-full y-w-full y-flex-1 y-flex-col y-items-center y-overflow-hidden y-bg-white"
               >
                 <div
@@ -172,8 +176,8 @@
                 >
                   <!-- 非全屏状态下的conversations -->
                   <y-conversations
-                    :showIcon="!modeConfig.modeIsFull"
-                    :showBack="!modeConfig.modeIsFull"
+                    :showIcon="!modeConfig.isFullMode"
+                    :showBack="!modeConfig.isFullMode"
                     :conversations="conversations"
                     :value="currentSessionId"
                     @back="showMiniConversations = false"
@@ -259,14 +263,14 @@ export default {
           height: '100%',
         }
       }
-      if (this.modeConfig.modeIsFull) {
-        return this.modeConfig.modeFull[this.modeConfig.mode]
+      if (this.modeConfig.isFullMode) {
+        return this.modeConfig.modeFull.size
       } else {
-        return this.modeConfig.modeNormal[this.modeConfig.mode]
+        return this.modeConfig.modeNormal.size
       }
     },
     getMessagesStyle() {
-      if (this.modeConfig.modeIsFull) {
+      if (this.modeConfig.isFullMode) {
         return this.modeConfig.modeFull.messages
       } else {
         return this.modeConfig.modeNormal.messages
@@ -331,10 +335,10 @@ export default {
         })
     },
     closeSiderbar() {
-      this.setModeConfigItem('modeShowSidebar', false)
+      this.setModeConfigItem('isShowSidebar', false)
     },
     openSiderbar() {
-      this.setModeConfigItem('modeShowSidebar', true)
+      this.setModeConfigItem('isShowSidebar', true)
     },
     closePage() {
       this.setModeConfigItem('modeVisible', false)
@@ -358,7 +362,7 @@ export default {
       }
     },
     toggleScreen() {
-      this.setModeConfigItem('modeIsFull', !this.modeConfig.modeIsFull)
+      this.setModeConfigItem('isFullMode', !this.modeConfig.isFullMode)
     },
     senderSubmit() {
       if (this.sender.content.trim() !== '') {
@@ -491,8 +495,11 @@ export default {
         id: 'message-' + Date.now(),
         isGenerating: true,
       }
+      // 兼容报错没有拉取到messages
+      if (!this.currentConversation.messages) {
+        this.currentConversation.messages = []
+      }
       this.currentConversation.messages.push(newMessage)
-
       this.tbcSSE.sendSSE(processedPayload)
     },
     changeSession({ sessionId }) {
@@ -526,7 +533,7 @@ export default {
             acc.push(bubble)
             return acc
           }, [])
-          this.$set(this.currentConversation, 'messages', messages)
+          this.$set(this.currentConversation, 'messages', messages || [])
         })
         .catch((err) => {
           console.error(err)
@@ -548,7 +555,7 @@ export default {
 }
 .y-layout-content {
   // background-image: url('~@/assets/main.png');
-  background-image: linear-gradient(to bottom, #e8f3ff, white 10%, white);
+  background-image: linear-gradient(to bottom, #e8f3ff, white 60px, white);
   background-size: cover;
 }
 

@@ -19,10 +19,10 @@ export default {
   },
   computed: {
     getDrawerStyle() {
-      if (this.modeConfig.modeIsFull) {
-        return this.modeConfig.modeFull[this.modeConfig.mode]
+      if (this.modeConfig.isFullMode) {
+        return this.modeConfig.modeFull.size
       }
-      return this.modeConfig.modeNormal[this.modeConfig.mode]
+      return this.modeConfig.modeNormal.size
     },
   },
   methods: {

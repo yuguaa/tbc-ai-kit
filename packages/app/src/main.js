@@ -19,22 +19,63 @@ if (process.env.NODE_ENV === 'development') {
       return {
         pageConfig: {
           mode: 'page',
-          modeFull: {},
+          modeFull: {
+            size: {
+              width: '100%',
+              height: '100%',
+            },
+          },
+          modeNormal: {
+            size: {
+              width: '50%',
+              height: '100%',
+            },
+          },
           modeVisible: false,
-          modeShowSidebar: true,
-          modeIsFull: true,
+          isShowSidebar: true,
+          isFullMode: true,
+          showHeaderCloseIcon: false,
+          showHeaderToggleScreenIcon: true,
+          showHeaderAvatarIcon: true,
+          showHeaderMoreIcon: true,
         },
         modalConfig: {
           mode: 'modal',
+          modeFull: {
+            size: {
+              width: '100%',
+              height: '100%',
+            },
+          },
+          modeNormal: {
+            size: {
+              width: '50%',
+              height: '50%',
+            },
+          },
           modeVisible: true,
-          modeShowSidebar: true,
-          modeIsFull: false,
+          isShowSidebar: true,
+          isFullMode: false,
+          showHeaderAvatarIcon: false,
         },
         drawerConfig: {
           mode: 'drawer',
+          modeFull: {
+            size: {
+              width: '100%',
+              height: '100%',
+            },
+          },
+          modeNormal: {
+            size: {
+              width: '500px',
+              height: '100%',
+            },
+          },
           modeVisible: true,
-          modeShowSidebar: true,
-          modeIsFull: false,
+          isShowSidebar: true,
+          isFullMode: false,
+          showHeaderAvatarIcon: false,
         },
         pageApp: null,
         modalApp: null,
@@ -71,11 +112,11 @@ if (process.env.NODE_ENV === 'development') {
         modeConfig: this.modalConfig,
       })
 
-      // // 创建 drawer 实例
-      // this.drawerApp = new TbcAiApp({
-      //   target: '#drawer-app',
-      //   modeConfig: this.drawerConfig,
-      // })
+      // 创建 drawer 实例
+      this.drawerApp = new TbcAiApp({
+        target: '#drawer-app',
+        modeConfig: this.drawerConfig,
+      })
     },
     methods: {
       togglePage() {},

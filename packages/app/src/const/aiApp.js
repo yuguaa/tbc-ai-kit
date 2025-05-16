@@ -58,15 +58,7 @@ const APP_MODE_MAP = {
 const DEFAULT_MODE_CONFIG = {
   mode: 'page',
   modeFull: {
-    page: {
-      width: '100%',
-      height: '100%',
-    },
-    modal: {
-      width: '100%',
-      height: '100%',
-    },
-    drawer: {
+    size: {
       width: '100%',
       height: '100%',
     },
@@ -77,15 +69,7 @@ const DEFAULT_MODE_CONFIG = {
     },
   },
   modeNormal: {
-    page: {
-      width: '50%',
-      height: '100%',
-    },
-    modal: {
-      width: '80%',
-      height: '80%',
-    },
-    drawer: {
+    size: {
       width: '50%',
       height: '100%',
     },
@@ -95,9 +79,13 @@ const DEFAULT_MODE_CONFIG = {
       width: '100%',
     },
   },
-  modeIsFull: true,
+  isFullMode: true,
   modeVisible: false,
-  modeShowSidebar: true,
+  isShowSidebar: true,
+  showHeaderCloseIcon: true,
+  showHeaderToggleScreenIcon: true,
+  showHeaderAvatarIcon: true,
+  showHeaderMoreIcon: true,
 }
 
 const WORK_FLOW_API_URL = '/gpt/chat/difySendMsgSteam'
