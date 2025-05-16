@@ -87,7 +87,13 @@ const DEFAULT_MODE_CONFIG = {
   showHeaderAvatarIcon: true,
   showHeaderMoreIcon: true,
 }
-
+const DEFAULT_API_CONFIG = {
+  params: {
+    boxType: 'AT_017',
+    types: 'LOCAL',
+  },
+  timeout: 1000 * 60 * 3,
+}
 const NORMAL_API_URL = '/gpt/chat/difySendMsgSteam'
 const WORK_FLOW_API_URL = '/gpt/chat/sendMsgSteam'
 const API_TIMEOUT = 1000 * 60 * 3
@@ -149,12 +155,7 @@ const NORMAL_API_INTERFACE = {
 // TC_018 员工培训计划
 // TC_019 会议纪要
 
-const WORK_FLOW_BOX_TYPES = [
-  'AT_004',
-  'AT_005',
-  'AT_006',  
-  'AT_017'
-]
+const WORK_FLOW_BOX_TYPES = ['AT_004', 'AT_005', 'AT_006', 'AT_017']
 const NORMAL_BOX_TYPES = [
   'TC_001',
   'TC_002',
@@ -197,6 +198,7 @@ const APP_NEW_SESSTION_ID = 'APP_NEW_SESSTION_ID'
 const APP_DEFAULT_TARGET_DOM = 'APP_DEFAULT_TARGET_DOM'
 
 const getApiConfigByConfig = (config) => {
+  console.log(`🚀 ~ config.params.boxType:`, config.params.boxType)
   if (WORK_FLOW_BOX_TYPES.includes(config.params.boxType)) {
     return deepmerge(WORK_FLOW_API_INTERFACE, config)
   }
@@ -228,6 +230,7 @@ export {
   APP_NEW_SESSTION_ID,
   APP_DEFAULT_TARGET_DOM,
   DEFAULT_MODE_CONFIG,
+  DEFAULT_API_CONFIG,
   WORK_FLOW_API_URL,
   NORMAL_API_URL,
   WORK_FLOW_API_INTERFACE,

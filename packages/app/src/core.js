@@ -6,6 +6,7 @@ import {
   // APP_NEW_SESSTION_ID,
   APP_DEFAULT_TARGET_DOM,
   DEFAULT_MODE_CONFIG,
+  DEFAULT_API_CONFIG,
   // NORMAL_BOX_TYPES,
   // WORK_FLOW_BOX_TYPES,
   getApiConfigByConfig,
@@ -25,13 +26,7 @@ class TbcAiApp {
   constructor({
     target,
     modeConfig = {},
-    apiConfig = {
-      params: {
-        boxType: 'AT_017',
-        types: 'LOCAL',
-      },
-      timeout: 1000 * 60 * 3,
-    },
+    apiConfig = {},
     conversationApiConfig = {
       mode: '',
       pageSize: 20,
@@ -45,6 +40,7 @@ class TbcAiApp {
     }
     this.conversationApiConfig = conversationApiConfig
     this.modeConfig = deepmerge(DEFAULT_MODE_CONFIG, modeConfig)
+    apiConfig = deepmerge(DEFAULT_API_CONFIG, apiConfig)
     this.apiConfig = getApiConfigByConfig(apiConfig)
     this.conversationApi = getConversationApiConfig(apiConfig, this.conversationApiConfig)
     gainChatDomain()

@@ -89,7 +89,7 @@ if (process.env.NODE_ENV === 'development') {
         modeConfig: this.pageConfig,
         apiConfig: {
           params: {
-            boxType: 'AT_004',
+            // boxType: 'AT_017',
             types: 'SPARK',
           },
         },

@@ -19,7 +19,7 @@ service.interceptors.response.use(
   (response) => {
     const reqUrl = response.config.url.split('?')[0]
     const res = response.data
-    if (res.code === 1001 || reqUrl.endsWith('.json')) {
+    if (res.code === 1001 || res.status === 0 || reqUrl.endsWith('.json')) {
       return res
     }
     return Promise.reject(response.data)

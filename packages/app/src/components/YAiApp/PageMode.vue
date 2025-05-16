@@ -226,7 +226,7 @@ export default {
       sender: {
         content: '',
         deepThink: false,
-        useType: 'LOCAL', // LOCAL or SPARK
+        useType: this.apiConfig.params.types, // LOCAL or SPARK
       },
       newSesstionId: APP_NEW_SESSTION_ID, // 会话并没有真正创建成功，临时存储
       conversations: [],
@@ -243,6 +243,7 @@ export default {
         pageNum: 1,
       },
       pageCount: 0,
+      total: 0,
       defaultPageSize: 30,
       showMiniConversations: false,
     }
@@ -281,7 +282,7 @@ export default {
     },
   },
   mounted() {
-    this.page.pageSize = this.modeConfig.pageSize || this.defaultPageSize
+    this.page.pageSize = this.conversationApiConfig.pageSize || this.defaultPageSize
     this.subscribeSSEEvents()
     this.getConversations()
   },
@@ -315,19 +316,25 @@ export default {
       const params = {
         boxType: this.apiConfig.params.boxType,
       }
-      if (this.modeConfig.historyType === 'limit') {
+      if (this.conversationApiConfig.mode === 'limit') {
         //限制获取30条
       }
-      if (this.modeConfig.historyType === 'page') {
+      if (this.conversationApiConfig.mode === 'page') {
         //分页获取
         this.pageCount++
-        params.pageNum = this.page.pageSize * this.pageCount
+        params['page.pageSize'] = this.page.pageSize * this.pageCount
+        params['page.pageNo'] = 1
+        params.searchBySelf = true
       }
       const postData = this.executeInterceptors('apiReqInterceptors', 'getConversations', params)
       this.conversationApi(postData)
-        .then(({ bizResult }) => {
-          const res = this.executeInterceptors('apiResInterceptors', 'getConversations', bizResult)
-          this.conversations = res
+        .then((res) => {
+          const result = this.executeInterceptors('apiResInterceptors', 'getConversations', res)
+          this.conversations = result.bizResult || result.data.items || []
+          console.log(`🚀 ~ this.conversations:`, this.conversations)
+          if (this.conversationApiConfig.mode === 'page') {
+            this.total = result.data.total
+          }
         })
         .catch((err) => {
           console.error(err)
