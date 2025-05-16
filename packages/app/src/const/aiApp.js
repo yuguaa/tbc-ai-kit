@@ -88,8 +88,8 @@ const DEFAULT_MODE_CONFIG = {
   showHeaderMoreIcon: true,
 }
 
-const WORK_FLOW_API_URL = '/gpt/chat/difySendMsgSteam'
 const NORMAL_API_URL = '/gpt/chat/difySendMsgSteam'
+const WORK_FLOW_API_URL = '/gpt/chat/sendMsgSteam'
 const API_TIMEOUT = 1000 * 60 * 3
 const WORK_FLOW_API_INTERFACE = {
   url: WORK_FLOW_API_URL,
@@ -129,12 +129,69 @@ const NORMAL_API_INTERFACE = {
   },
   timeout: API_TIMEOUT,
 }
+// AT_004 AI通用问答
+// AT_005 AI知识库
+// AT_006 AI课程导师
+// AT_007 AI文档解析
+// AT_017 AI直播智能套件
+// TC_001 自我认知
+// TC_002 MBTI性格测试
+// TC_003 职业规划设计
+// TC_004 个人能力提升
+// TC_005 商业计划书
+// TC_007 工作复盘总结
+// TC_008 快速了解他人
+// TC_011 个人教练
+// TC_012 心理导师
+// TC_013 健康顾问
+// TC_014 文案编写
+// TC_017 岗位画像建模
+// TC_018 员工培训计划
+// TC_019 会议纪要
 
-const WORK_FLOW_BOX_TYPES = ['AT_017', 'TC_045']
-const NORMAL_BOX_TYPES = ['AT_004']
-
+const WORK_FLOW_BOX_TYPES = [
+  'AT_004',
+  'AT_005',
+  'AT_006',  
+  'AT_017'
+]
+const NORMAL_BOX_TYPES = [
+  'TC_001',
+  'TC_002',
+  'TC_003',
+  'TC_004',
+  'TC_005',
+  'TC_007',
+  'TC_008',
+  'TC_011',
+  'TC_012',
+  'TC_013',
+  'TC_014',
+  'TC_017',
+  'TC_018',
+  'TC_019',
+]
 const HISTROY_LIST_LIMIT_TYPES = ['AT_017']
-const HISTROY_PAGE_TYPES = ['TC_045']
+const HISTROY_PAGE_TYPES = [
+  'AT_004',
+  'AT_005',
+  'AT_006',
+  'AT_007',
+  'TC_001',
+  'TC_002',
+  'TC_003',
+  'TC_004',
+  'TC_005',
+  'TC_007',
+  'TC_008',
+  'TC_011',
+  'TC_012',
+  'TC_013',
+  'TC_014',
+  'TC_017',
+  'TC_018',
+  'TC_019',
+]
 
 const APP_NEW_SESSTION_ID = 'APP_NEW_SESSTION_ID'
 const APP_DEFAULT_TARGET_DOM = 'APP_DEFAULT_TARGET_DOM'

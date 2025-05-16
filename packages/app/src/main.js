@@ -9,7 +9,7 @@ import TbcAiApp from './core'
 
 if (process.env.NODE_ENV === 'development') {
   window.$cookies.set('corp_code', 'lyv4')
-  window.$cookies.set('eln_session_id', 'elnSessionId.6c5998e42ca14010a929a5d80ed4cbe0')
+  window.$cookies.set('eln_session_id', 'elnSessionId.918263e955ca44a78bf301bf298f9937')
 
   // 开发模式下，body margin 0
   document.body.style.margin = '0'
@@ -87,6 +87,12 @@ if (process.env.NODE_ENV === 'development') {
       this.pageApp = new TbcAiApp({
         target: '#page-app',
         modeConfig: this.pageConfig,
+        apiConfig: {
+          params: {
+            boxType: 'AT_004',
+            types: 'SPARK',
+          },
+        },
       })
       // sse请求和响应拦截器
       // this.pageApp.useSSERequestInterceptor((params) => {
@@ -106,17 +112,17 @@ if (process.env.NODE_ENV === 'development') {
       //   console.log('响应拦截器', params, type)
       //   return params
       // })
-      // 创建 modal 实例
-      this.modalApp = new TbcAiApp({
-        target: '#modal-app',
-        modeConfig: this.modalConfig,
-      })
+      // // 创建 modal 实例
+      // this.modalApp = new TbcAiApp({
+      //   target: '#modal-app',
+      //   modeConfig: this.modalConfig,
+      // })
 
-      // 创建 drawer 实例
-      this.drawerApp = new TbcAiApp({
-        target: '#drawer-app',
-        modeConfig: this.drawerConfig,
-      })
+      // // 创建 drawer 实例
+      // this.drawerApp = new TbcAiApp({
+      //   target: '#drawer-app',
+      //   modeConfig: this.drawerConfig,
+      // })
     },
     methods: {
       togglePage() {},
