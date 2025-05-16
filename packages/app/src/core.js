@@ -18,6 +18,8 @@ class TbcAiApp {
   apiConfig = {} // API 配置
   sseReqInterceptors = [] // 请求拦截器
   sseResInterceptors = [] // 响应拦截器
+  apiReqInterceptors = [] // 请求拦截器
+  apiResInterceptors = [] // 响应拦截器
   tbcSSE = new TbcSSE({}) // SSE 实例
   prefix = '' // 域名
   constructor({
@@ -56,6 +58,8 @@ class TbcAiApp {
           prefix: this.prefix,
           sseReqInterceptors: this.sseReqInterceptors,
           sseResInterceptors: this.sseResInterceptors,
+          apiReqInterceptors: this.apiReqInterceptors,
+          apiResInterceptors: this.apiResInterceptors,
           tbcSSE: this.tbcSSE,
           conversationApi: this.conversationApi,
           conversationApiConfig: this.conversationApiConfig,
@@ -78,12 +82,18 @@ class TbcAiApp {
         console.error('获取域名失败', err)
       })
   }
+  useAPIRequestInterceptor(interceptor) {
+    this.apiReqInterceptors.push(interceptor)
+  }
+  useAPIResponseInterceptor(interceptor) {
+    this.apiResInterceptors.push(interceptor)
+  }
   // 请求拦截器
-  useRequestInterceptor(interceptor) {
+  useSSERequestInterceptor(interceptor) {
     this.sseReqInterceptors.push(interceptor)
   }
   // 响应拦截器
-  useResponseInterceptor(interceptor) {
+  useSSEResponseInterceptor(interceptor) {
     this.sseResInterceptors.push(interceptor)
   }
   setModeConfig = (modeConfig) => {

@@ -8,8 +8,8 @@ Vue.config.productionTip = false
 import TbcAiApp from './core'
 
 if (process.env.NODE_ENV === 'development') {
-  window.$cookies.set('corp_code', 'shyf17')
-  window.$cookies.set('eln_session_id', 'elnSessionId.4a7b29c7c95e4245afbf24bb65af5cac')
+  window.$cookies.set('corp_code', 'lyv4')
+  window.$cookies.set('eln_session_id', 'elnSessionId.6c5998e42ca14010a929a5d80ed4cbe0')
 
   // 开发模式下，body margin 0
   document.body.style.margin = '0'
@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'development') {
         },
         drawerConfig: {
           mode: 'drawer',
-          modeVisible: false,
+          modeVisible: true,
           modeShowSidebar: true,
           modeIsFull: false,
         },
@@ -48,20 +48,28 @@ if (process.env.NODE_ENV === 'development') {
         modeConfig: this.pageConfig,
       })
       // sse请求和响应拦截器
-      // this.pageApp.useRequestInterceptor((params) => {
+      // this.pageApp.useSSERequestInterceptor((params) => {
       //   console.log('请求拦截器', params)
       //   return params
       // })
-      // this.pageApp.useResponseInterceptor((params) => {
+      // this.pageApp.useSSEResponseInterceptor((params) => {
       //   console.log('响应拦截器', params)
       //   return params
       // })
-
-      // // 创建 modal 实例
-      // this.modalApp = new TbcAiApp({
-      //   target: '#modal-app',
-      //   modeConfig: this.modalConfig,
+      // // api请求和响应拦截器
+      // this.pageApp.useAPIRequestInterceptor((params, type) => {
+      //   console.log('请求拦截器', params, type)
+      //   return params
       // })
+      // this.pageApp.useAPIResponseInterceptor((params, type) => {
+      //   console.log('响应拦截器', params, type)
+      //   return params
+      // })
+      // 创建 modal 实例
+      this.modalApp = new TbcAiApp({
+        target: '#modal-app',
+        modeConfig: this.modalConfig,
+      })
 
       // // 创建 drawer 实例
       // this.drawerApp = new TbcAiApp({

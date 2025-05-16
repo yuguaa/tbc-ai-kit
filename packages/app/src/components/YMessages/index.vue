@@ -11,9 +11,8 @@
         </div>
         <div class="y-messages-item-section y-mb-24 y-flex y-flex-col">
           <div class="y-mr-auto">
-            <!-- {{item.answer}} -->
             <y-markdown-render v-if="item.answer" :content="item.answer" />
-            <div v-else>loading...</div>
+            <div v-if="!item.answer && item.isGenerating">loading...</div>
           </div>
         </div>
       </div>

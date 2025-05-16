@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="y-flex-1 y-overflow-y-auto">
-      <template v-if="Object.keys(conversationGroup).length">
+      <template v-if="conversations.length">
         <div class="y-mt-20 y-text-secondText" v-for="(list, key) in conversationGroup" :key="key">
           <div class="y-mb-4">{{ key }}</div>
           <div>
@@ -25,15 +25,16 @@
               :key="conversation.sessionId"
               @click="goSession(conversation)"
             >
-              <div class="y-mr-8 y-flex y-items-center y-justify-center">
-                <svg-icon v-if="showIcon" icon-class="comment-rectange" />
+              <div v-if="showIcon" class="y-mr-8 y-flex y-items-center y-justify-center">
+                <svg-icon icon-class="comment-rectange" />
               </div>
-              <div>{{ conversation.sessionName }}</div>
+              <div class="y-overflow-hidden y-text-ellipsis y-text-nowrap" :title="conversation.sessionName">
+                {{ conversation.sessionName }}
+              </div>
             </div>
           </div>
         </div>
       </template>
-      <div v-else>222</div>
     </div>
   </div>
 </template>

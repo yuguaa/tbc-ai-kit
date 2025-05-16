@@ -29,6 +29,14 @@ const AI_APP_PROPS = {
     type: Array,
     default: () => [],
   },
+  apiReqInterceptors: {
+    type: Array,
+    default: () => [],
+  },
+  apiResInterceptors: {
+    type: Array,
+    default: () => [],
+  },
   tbcSSE: {
     type: Object,
     default: () => {},

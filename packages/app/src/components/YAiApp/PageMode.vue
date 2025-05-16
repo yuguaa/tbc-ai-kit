@@ -24,12 +24,13 @@
             </div>
             <div
               class="y-mt-20 y-flex y-cursor-pointer y-items-center y-rounded-[8px] y-border y-border-solid y-border-borderDark y-bg-white y-px-16 y-py-[7px] y-text-secondText y-transition-all y-duration-300 hover:y-shadow-custom"
+              @click="newChat"
             >
               <svg-icon class="y-text-[14px]" icon-class="new-chat"></svg-icon>
               <span class="y-ml-4">新会话</span>
             </div>
           </div>
-          <div class="y-layout-sidebar-content y-overflow-auto y-p-20 y-scrollbar-common">
+          <div v-if="conversations.length" class="y-layout-sidebar-content y-overflow-auto y-p-20 y-scrollbar-common">
             <y-conversations
               :showIcon="!modeConfig.modeIsFull"
               :showBack="!modeConfig.modeIsFull"
@@ -38,6 +39,7 @@
               @go="changeSession"
             />
           </div>
+          <y-no-data v-else text="暂无历史会话"></y-no-data>
         </div>
       </div>
       <div
@@ -92,8 +94,8 @@
                   ></svg-icon>
                 </span>
               </y-popper>
-              <span class="y-p-4">
-                <svg-icon class="y-cursor-pointer" icon-class="close"></svg-icon>
+              <span class="y-p-4" v-if="modeConfig.mode === 'modal' || modeConfig.mode === 'drawer'">
+                <svg-icon class="y-cursor-pointer" icon-class="close" @click="closePage"></svg-icon>
               </span>
               <div class="y-flex y-h-28 y-w-28 y-items-center y-justify-center y-rounded-full">
                 <img
@@ -131,7 +133,7 @@
                   :sender.sync="sender"
                   :isGenerating="isGenerating"
                   @submit="senderSubmit"
-                  @stop="senderStop"
+                  @stop="stopSendMsg"
                 >
                   <div v-if="!modeConfig.modeIsFull" class="y-pb-12">
                     <div class="y-flex">
@@ -165,6 +167,7 @@
                 class="y-absolute y-box-border y-flex y-h-full y-w-full y-flex-1 y-flex-col y-items-center y-overflow-hidden y-bg-white"
               >
                 <div
+                  v-if="conversations.length"
                   class="y-conversations-mini-content y-absolute y-bottom-0 y-right-0 y-top-0 y-box-border y-flex y-h-full y-w-full y-flex-col y-items-center y-overflow-hidden y-overflow-y-auto y-p-20 y-scrollbar-common"
                 >
                   <!-- 非全屏状态下的conversations -->
@@ -177,6 +180,7 @@
                     @go="changeSession"
                   />
                 </div>
+                <y-no-data v-else text="暂无历史会话"></y-no-data>
               </div>
             </transition>
           </div>
@@ -188,9 +192,10 @@
 </template>
 
 <script>
+import axios from 'axios'
 import deepmerge from 'deepmerge'
 import { APP_NEW_SESSTION_ID, NORMAL_BOX_TYPES, WORK_FLOW_BOX_TYPES, AI_APP_PROPS } from '@/const/aiApp'
-
+import { queryChatLogList, getJSONData, saveChat } from '@/api'
 import SvgIcon from '@/components/SvgIcon'
 import YConversations from '@/components/YConversations'
 import YPopper from '@/components/YPopper'
@@ -198,6 +203,7 @@ import YMessages from '@/components/YMessages'
 import YSender from '@/components/YSender'
 import YButton from '@/components/YButton'
 import YMessage from '@/components/YMessage'
+import YNoData from '@/components/YNoData'
 export default {
   name: 'YLayout',
   components: {
@@ -208,6 +214,7 @@ export default {
     YSender,
     YButton,
     YMessage,
+    YNoData,
   },
   props: AI_APP_PROPS,
   data() {
@@ -217,9 +224,16 @@ export default {
         deepThink: false,
         useType: 'LOCAL', // LOCAL or SPARK
       },
+      newSesstionId: APP_NEW_SESSTION_ID, // 会话并没有真正创建成功，临时存储
       conversations: [],
       currentSessionId: APP_NEW_SESSTION_ID,
-      currentConversation: {},
+      currentConversation: {
+        messages: [],
+        sources: [],
+        sessionName: '新会话',
+        createTime: new Date().getTime(),
+        sessionId: APP_NEW_SESSTION_ID,
+      },
       page: {
         pageSize: 0,
         pageNum: 1,
@@ -236,7 +250,7 @@ export default {
       })
     },
     messages() {
-      return this.conversations.find((item) => item.sessionId === this.currentSessionId)?.messages || []
+      return (this.currentConversation && this.currentConversation.messages) || []
     },
     getLayoutStyle() {
       if (this.modeConfig.mode === 'modal' || this.modeConfig.mode === 'drawer') {
@@ -265,10 +279,35 @@ export default {
   mounted() {
     this.page.pageSize = this.modeConfig.pageSize || this.defaultPageSize
     this.subscribeSSEEvents()
-    this.getConversationList()
+    this.getConversations()
   },
   methods: {
-    getConversationList() {
+    createSource() {
+      const CancelToken = axios.CancelToken
+      const source = CancelToken.source()
+      if (!this.currentConversation.sources) {
+        this.currentConversation.sources = []
+      }
+      this.currentConversation.sources.push(source)
+      return source
+    },
+    cancelRequest() {
+      const sources = this.currentConversation.sources
+      if (sources && sources.length > 0) {
+        sources.forEach((source) => {
+          source.cancel({
+            type: 'TBC_AI_APP_CANCEL',
+          })
+        })
+        this.currentConversation.sources = []
+      }
+    },
+    executeInterceptors(interceptorName, interceptorType, data) {
+      return this[interceptorName].reduce((acc, interceptor) => {
+        return interceptor(acc, interceptorType) || acc
+      }, data)
+    },
+    getConversations() {
       const params = {
         boxType: this.apiConfig.params.boxType,
       }
@@ -280,9 +319,11 @@ export default {
         this.pageCount++
         params.pageNum = this.page.pageSize * this.pageCount
       }
-      this.conversationApi(params)
+      const postData = this.executeInterceptors('apiReqInterceptors', 'getConversations', params)
+      this.conversationApi(postData)
         .then(({ bizResult }) => {
-          this.conversations = bizResult
+          const res = this.executeInterceptors('apiResInterceptors', 'getConversations', bizResult)
+          this.conversations = res
         })
         .catch((err) => {
           console.error(err)
@@ -295,8 +336,26 @@ export default {
     openSiderbar() {
       this.setModeConfigItem('modeShowSidebar', true)
     },
+    closePage() {
+      this.setModeConfigItem('modeVisible', false)
+    },
     newChat() {
-      console.log('newChat')
+      if (this.currentSessionId === APP_NEW_SESSTION_ID) {
+        this.$refs.YMessage.addMessage('已在新会话', 'warning')
+        return
+      } else {
+        this.stopSendMsg()
+        this.cancelRequest()
+        this.currentSessionId = APP_NEW_SESSTION_ID
+        this.currentConversation = {
+          //创建新对话，但是不展示在侧边栏，当第一条请求结束再展示
+          messages: [],
+          sources: [],
+          sessionName: '新会话',
+          createTime: new Date().getTime(),
+          sessionId: APP_NEW_SESSTION_ID,
+        }
+      }
     },
     toggleScreen() {
       this.setModeConfigItem('modeIsFull', !this.modeConfig.modeIsFull)
@@ -316,10 +375,21 @@ export default {
         }
         this.sendMsg({ params })
       } else {
-        this.$refs.YMessage.addMessage('请先填写内容', 'warning')
+        this.$refs.YMessage.addMessage('请先输入想要问的问题~', 'warning')
       }
     },
-    senderStop() {
+    stopSendMsg() {
+      this.currentConversation?.messages?.forEach((item) => {
+        if (item.isGenerating) {
+          item.isGenerating = false
+        }
+      })
+      // 暂时不加入到会话列表中
+      // if (this.newSesstionId !== APP_NEW_SESSTION_ID && this.currentConversation.sessionId === APP_NEW_SESSTION_ID) {
+      //   this.currentConversation.sessionId = this.newSesstionId
+      //   console.log(`🚀 ~ this.currentConversation:`, JSON.stringify(this.currentConversation))
+      //   this.conversations.push(this.currentConversation)
+      // }
       this.tbcSSE.terminateRequest(JSON.stringify({ close: true }))
     },
     // 给sse加订阅
@@ -328,11 +398,7 @@ export default {
       const eventTypes = ['onopen', 'onmessage', 'onend', 'onerror', 'oncancel', 'ontimeout', 'onfinally']
       eventTypes.forEach((eventType) => {
         this.tbcSSE.subscribe(eventType, (data) => {
-          // 应用响应拦截器
-          const processedData = this.sseResInterceptors.reduce(
-            (acc, interceptor) => interceptor(acc, eventType) || acc,
-            data,
-          )
+          const processedData = this.executeInterceptors('sseResInterceptors', eventType, data)
           // 根据事件类型调用相应的处理方法
           this.handleSSEEvent(eventType, processedData)
         })
@@ -340,20 +406,35 @@ export default {
     },
     // 处理SSE事件
     handleSSEEvent(eventType, data) {
-      const lastBubble = this.currentConversation.messages[this.currentConversation.messages.length - 1]
+      const lastMessage =
+        this.currentConversation &&
+        this.currentConversation.messages &&
+        this.currentConversation.messages[this.currentConversation.messages.length - 1]
       let parsedData
       switch (eventType) {
         case 'onopen':
           break
         case 'onmessage':
           parsedData = JSON.parse(data.event.data)
-          lastBubble.id = parsedData.conversation_id
-          lastBubble.answer += data.data || ''
+          lastMessage.id = parsedData.conversation_id
+          lastMessage.answer += data.data || ''
           break
         case 'onend':
-          console.log('SSE连接已关闭:', data)
+          console.log('SSE连接已结束:', data)
+          if (this.currentSessionId === APP_NEW_SESSTION_ID && this.newSesstionId !== APP_NEW_SESSTION_ID) {
+            //新会话第一次加入到列表中
+            this.conversations.push(this.currentConversation)
+            this.currentConversation.sessionId = this.newSesstionId
+            this.currentSessionId = this.newSesstionId
+          }
+          this.newSesstionId = APP_NEW_SESSTION_ID
+          lastMessage.isGenerating = false
           break
         case 'onerror':
+          // 处理异常情况
+          if (lastMessage) {
+            lastMessage.isGenerating = false
+          }
           console.error('SSE发生错误:', data)
           break
         case 'oncancel':
@@ -364,17 +445,22 @@ export default {
           break
         case 'onfinally':
           console.log('SSE请求完成:', data)
-          lastBubble.isGenerating = false
           break
         default:
           console.warn(`未知事件类型: ${eventType}`, data)
       }
     },
     // 发送对话消息
-    sendMsg(payload) {
-      this.senderStop()
+    async sendMsg(payload) {
+      this.stopSendMsg()
       payload = deepmerge(this.apiConfig, payload)
       payload.params.sessionId = this.currentSessionId === APP_NEW_SESSTION_ID ? '' : this.currentSessionId
+      payload.params.convId =
+        this.currentConversation.messages &&
+        this.currentConversation.messages[this.currentConversation.messages.length - 1]?.id
+      if (payload.params.convId && payload.params.convId.startsWith('message-')) {
+        payload.params.convId = ''
+      }
       payload.params.inputs.cookie = document.cookie
       payload.params.inputs.domain_name = this.prefix
       payload.params.elnSessionId = window.$cookies.get('eln_session_id') || ''
@@ -386,46 +472,70 @@ export default {
         // 处理普通类型的请求
         delete payload.params.inputs
       }
-      const processedPayload = this.sseReqInterceptors.reduce((acc, interceptor) => interceptor(acc), payload)
+      const processedPayload = this.executeInterceptors('sseReqInterceptors', 'sendMsg', payload)
       if (this.currentSessionId === APP_NEW_SESSTION_ID) {
-        //新对话需要添加对话
-        const hasNewConversation = this.conversations.some((item) => item.sessionId === APP_NEW_SESSTION_ID)
-        if (!hasNewConversation) {
-          this.conversations.push({
-            sessionId: APP_NEW_SESSTION_ID,
-            sessionName: payload.params.sendMsg,
-            messages: [],
-            createTime: Date.now(),
-          })
+        // 新会话需要先创建一个会话id
+        const newChatParams = {
+          sessionId: '',
+          sessionName: payload.params.sendMsg,
         }
+        const newChatPostData = this.executeInterceptors('apiReqInterceptors', 'newChat', newChatParams)
+        const { bizResult } = await saveChat(newChatPostData)
+        this.newSesstionId = bizResult.sessionId // 会话并没有真正创建成功，临时存储
+        payload.params.sessionId = this.newSesstionId
+        this.currentConversation.sessionName = payload.params.sendMsg
       }
-      this.currentConversation = this.conversations.find((item) => item.sessionId === this.currentSessionId)
-      console.log(`🚀 ~ this.currentConversation:`, this.currentConversation)
       const newMessage = {
         question: payload.params.sendMsg,
         answer: '',
-        id: 'bubble-' + Date.now(),
+        id: 'message-' + Date.now(),
         isGenerating: true,
       }
       this.currentConversation.messages.push(newMessage)
 
       this.tbcSSE.sendSSE(processedPayload)
     },
-    // 新增：终止SSE连接的方法
-    terminateSSE() {
-      this.tbcSSE.terminateWorker()
-      console.log('SSE WORKER 连接已终止')
-    },
     changeSession({ sessionId }) {
       if (sessionId === this.currentSessionId) {
         return
       }
+      // 关闭当前会话的SSE请求
+      this.stopSendMsg()
+      // 取消当前会话的请求
+      this.cancelRequest()
       this.showMiniConversations = false
       this.currentSessionId = sessionId
+      this.newSesstionId = APP_NEW_SESSTION_ID
       this.currentConversation = this.conversations.find((item) => item.sessionId === sessionId)
       this.getConversationMessages()
     },
-    getConversationMessages() {},
+    getConversationMessages() {
+      const params = {
+        sessionId: this.currentSessionId,
+      }
+      const postData = this.executeInterceptors('apiReqInterceptors', 'getConversationMessages', params)
+      queryChatLogList(postData, this.createSource)
+        .then(async ({ bizResult }) => {
+          const jsonList = bizResult.map((el) => el.fileTextUrl)
+          const jsonData = await Promise.all(jsonList.map((url) => getJSONData(url, this.createSource)))
+          const messages = jsonData.reduce((acc, cur, index) => {
+            const bubble = {
+              ...cur,
+              id: 'message-' + index,
+            }
+            acc.push(bubble)
+            return acc
+          }, [])
+          this.$set(this.currentConversation, 'messages', messages)
+        })
+        .catch((err) => {
+          console.error(err)
+          if (err.message.type === 'TBC_AI_APP_CANCEL') {
+            return
+          }
+          this.$refs.YMessage.addMessage('获取会话历史消息失败', 'error')
+        })
+    },
   },
 }
 </script>

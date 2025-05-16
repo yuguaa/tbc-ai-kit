@@ -26,3 +26,32 @@ export function queryChatListLimit(data) {
     data,
   })
 }
+
+export function queryChatLogList(data, createSource) {
+  const source = createSource()
+  const cancelToken = source.token
+  return request({
+    url: `/gpt/chatLog/queryChatLogList`,
+    method: 'post',
+    data,
+    cancelToken,
+  })
+}
+
+export function getJSONData(jsonUrl, createSource) {
+  const source = createSource()
+  const cancelToken = source.token
+  return request({
+    url: jsonUrl,
+    method: 'get',
+    cancelToken,
+  })
+}
+
+export function saveChat(data) {
+  return request({
+    url: `/gpt/chatLog/saveChat`,
+    method: 'post',
+    data,
+  })
+}

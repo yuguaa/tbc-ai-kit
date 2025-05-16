@@ -55,7 +55,7 @@
           <div class="qa-sender__submit" v-if="isGenerating">
             <svg-icon icon-class="pause" @click="onStop" />
           </div>
-          <div class="qa-sender__submit" :class="{ disabled: !this.sender.content.trim() }" v-else>
+          <div class="qa-sender__submit" v-else>
             <svg-icon icon-class="sending" @click="onSubmit" />
           </div>
         </div>
