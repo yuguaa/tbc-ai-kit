@@ -168,7 +168,6 @@
                 class="y-absolute y-box-border y-flex y-h-full y-w-full y-flex-1 y-flex-col y-items-center y-overflow-hidden y-bg-white"
               >
                 <div
-                  v-if="conversations.length"
                   class="y-conversations-mini-content y-layout-conversation-scroll-el y-absolute y-bottom-0 y-right-0 y-top-0 y-box-border y-flex y-h-full y-w-full y-flex-col y-items-center y-overflow-hidden y-overflow-y-auto y-p-20 y-scrollbar-common"
                   @scroll="onConversationsScroll"
                 >
@@ -182,7 +181,6 @@
                     @go="changeSession"
                   />
                 </div>
-                <y-no-data v-else text="暂无历史会话"></y-no-data>
               </div>
             </transition>
           </div>
@@ -454,7 +452,7 @@ export default {
       switch (eventType) {
         case 'onopen':
           lastMessage.answer +=
-            '::: yugu-start[app]${"a":1,"b":[{"c":222}]}$ \napp开始了\n # 一级标题\n ::: yugu-start[sub]\n # 二级标签开始了\n  ::: yugu-end[sub] \n- [ ] 7:30-8:00 晨跑3公里\n- [ ] 每工作1小时起身拉伸/喝水\n # 二级标签结束了\n '
+            '::: yugu-start[app]${"a":1,"b":[{"c":222}]}$ \napp开始了\n # 一级标题\n::: yugu-start[sub]\n # 二级标签开始了\n::: yugu-end[sub]\n- [ ] 7:30-8:00 晨跑3公里\n- [ ] 每工作1小时起身拉伸/喝水\n\n\n # 二级标签结束了\n \n'
           break
         case 'onmessage':
           parsedData = JSON.parse(data.event.data)
@@ -462,7 +460,7 @@ export default {
           lastMessage.answer += data.data || ' '
           break
         case 'onend':
-          lastMessage.answer += '\n\n\n\n\n::: yugu-end[app]$这里是数据，可以是字符串和json$ \n\n\n\n\n '
+          lastMessage.answer += '\n::: yugu-end[app]$这里是数据，可以是字符串和json$\n'
           console.log('SSE连接已结束:', data)
           if (this.currentSessionId === APP_NEW_SESSTION_ID && this.newSesstionId !== APP_NEW_SESSTION_ID) {
             //新会话第一次加入到列表中

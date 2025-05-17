@@ -1,5 +1,10 @@
 <template>
-  <div class="y-flex y-w-full y-flex-col">
+  <div
+    class="y-flex y-w-full y-flex-col"
+    :class="{
+      'y-h-full': !conversations.length,
+    }"
+  >
     <div class="y-flex y-shrink-0 y-justify-between">
       <div class="y-flex y-items-center">
         <svg-icon icon-class="chats" />
@@ -35,16 +40,19 @@
           </div>
         </div>
       </template>
+      <y-no-data v-else text="暂无历史会话"></y-no-data>
     </div>
   </div>
 </template>
 
 <script>
 import SvgIcon from '@/components/SvgIcon'
+import YNoData from '@/components/YNoData'
 export default {
   name: 'YConversations',
   components: {
     SvgIcon,
+    YNoData,
   },
   props: {
     conversations: {

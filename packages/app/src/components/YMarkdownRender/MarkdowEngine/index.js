@@ -16,7 +16,6 @@ const md = new MarkdownIt({
   html: true,
   xhtmlOut: true,
   breaks: true,
-  langPrefix: 'lang-',
   linkify: false,
   typographer: true,
 })

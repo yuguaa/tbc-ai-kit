@@ -1,18 +1,17 @@
 export default function markdownItYuguPlugin(md, options) {
   const opts = Object.assign(
     {
-      onDataExtract: null, // 回调函数，接收 { startPrefix, startData, endSuffix, endData }
-      closedAttr: ['data-closed', 'true'], // 结束标记存在时添加的属性
+      onDataExtract: null,
+      closedAttr: ['data-closed', 'true'],
     },
     options,
   )
 
-  md.block.ruler.before('paragraph', 'yugu_block', function (state, startLine, endLine, silent) {
+  md.block.ruler.after('fence', 'yugu_block', function (state, startLine, endLine, silent) {
     let pos = state.bMarks[startLine] + state.tShift[startLine]
     let max = state.eMarks[startLine]
     let lineText = state.src.slice(pos, max)
 
-    // 支持非必须 $json$，正则可选捕获数据部分
     const startRegex = /^::: yugu-start\[([^\]]*)\](?:\$(.+?)\$)?/
     const startMatch = lineText.match(startRegex)
     if (!startMatch) return false
@@ -28,11 +27,11 @@ export default function markdownItYuguPlugin(md, options) {
     let endDataRaw = null
     let nestingLevel = 1
 
+    // 收集内容，保留原始缩进
     while (endLineNum < endLine) {
-      pos = state.bMarks[endLineNum] + state.tShift[endLineNum]
+      pos = state.bMarks[endLineNum]
       max = state.eMarks[endLineNum]
       lineText = state.src.slice(pos, max)
-
       const nestedStartMatch = lineText.match(/^::: yugu-start\[([^\]]*)\](?:\$(.+?)\$)?/)
       if (nestedStartMatch) nestingLevel++
 
@@ -47,15 +46,15 @@ export default function markdownItYuguPlugin(md, options) {
         }
       }
 
-      content += lineText + '\n'
+      content += state.src.slice(state.bMarks[endLineNum], max) + '\n'
       endLineNum++
     }
 
     if (!foundEnd) {
       while (endLineNum < endLine) {
-        pos = state.bMarks[endLineNum] + state.tShift[endLineNum]
+        pos = state.bMarks[endLineNum]
         max = state.eMarks[endLineNum]
-        content += state.src.slice(pos, max) + '\n'
+        content += state.src.slice(state.bMarks[endLineNum], max) + '\n'
         endLineNum++
       }
     }
@@ -76,26 +75,17 @@ export default function markdownItYuguPlugin(md, options) {
 
     openToken.meta = openToken.meta || {}
     openToken.meta.startPrefix = startPrefix
-    if (startDataRaw) {
-      try {
-        openToken.meta.startData = JSON.parse(startDataRaw)
-      } catch (e) {
-        openToken.meta.startData = startDataRaw
-      }
-    } else {
-      openToken.meta.startData = null
+    try {
+      openToken.meta.startData = startDataRaw ? JSON.parse(startDataRaw) : null
+    } catch (e) {
+      openToken.meta.startData = startDataRaw
     }
-
     if (foundEnd && endSuffix) {
       openToken.meta.endSuffix = endSuffix
-      if (endDataRaw) {
-        try {
-          openToken.meta.endData = JSON.parse(endDataRaw)
-        } catch (e) {
-          openToken.meta.endData = endDataRaw
-        }
-      } else {
-        openToken.meta.endData = null
+      try {
+        openToken.meta.endData = endDataRaw ? JSON.parse(endDataRaw) : null
+      } catch (e) {
+        openToken.meta.endData = endDataRaw
       }
     }
 
