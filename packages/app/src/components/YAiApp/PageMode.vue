@@ -424,6 +424,7 @@ export default {
       let parsedData
       switch (eventType) {
         case 'onopen':
+           lastMessage.answer += '::: yugu-start[app]${"a":1,"b":[{"c":222}]}$ \napp开始了\n # 一级标题\n ::: yugu-start[sub]\n # 二级标签开始了\n  ::: yugu-end[sub] \n # 二级标签结束了\n ::: yugu-end[app]$这里是数据，可以是字符串和json$'
           break
         case 'onmessage':
           parsedData = JSON.parse(data.event.data)

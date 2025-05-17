@@ -1,4 +1,4 @@
-export function tbcPlugin(md, options) {
+export function yuguPlugin(md, options) {
   const opts = Object.assign(
     {
       onDataExtract: null, // 回调函数，接收 { startPrefix, startData, endSuffix, endData }
@@ -7,13 +7,13 @@ export function tbcPlugin(md, options) {
     options,
   )
 
-  md.block.ruler.before('paragraph', 'tbc_block', function (state, startLine, endLine, silent) {
+  md.block.ruler.before('paragraph', 'yugu_block', function (state, startLine, endLine, silent) {
     let pos = state.bMarks[startLine] + state.tShift[startLine]
     let max = state.eMarks[startLine]
     let lineText = state.src.slice(pos, max)
 
     // 支持非必须 $json$，正则可选捕获数据部分
-    const startRegex = /^::: tbc-start\[([^\]]*)\](?:\$(.+?)\$)?/
+    const startRegex = /^::: yugu-start\[([^\]]*)\](?:\$(.+?)\$)?/
     const startMatch = lineText.match(startRegex)
     if (!startMatch) return false
     if (silent) return true
@@ -33,10 +33,10 @@ export function tbcPlugin(md, options) {
       max = state.eMarks[endLineNum]
       lineText = state.src.slice(pos, max)
 
-      const nestedStartMatch = lineText.match(/^::: tbc-start\[([^\]]*)\](?:\$(.+?)\$)?/)
+      const nestedStartMatch = lineText.match(/^::: yugu-start\[([^\]]*)\](?:\$(.+?)\$)?/)
       if (nestedStartMatch) nestingLevel++
 
-      const endMatch = lineText.match(/^::: tbc-end\[([^\]]*)\](?:\$(.+?)\$)?/)
+      const endMatch = lineText.match(/^::: yugu-end\[([^\]]*)\](?:\$(.+?)\$)?/)
       if (endMatch) {
         nestingLevel--
         if (nestingLevel === 0) {
@@ -62,14 +62,14 @@ export function tbcPlugin(md, options) {
 
     state.line = endLineNum + (foundEnd ? 1 : 0)
 
-    const openToken = state.push('tbc_block_open', 'div', 1)
+    const openToken = state.push('yugu_block_open', 'div', 1)
     openToken.attrs = openToken.attrs || []
-    openToken.attrs.push(['class', 'tbc'])
-    if (startDataRaw) openToken.attrs.push(['data-tbc-start', startDataRaw])
-    openToken.attrs.push(['data-tbc-prefix', startPrefix])
+    openToken.attrs.push(['class', 'yugu'])
+    if (startDataRaw) openToken.attrs.push(['data-yugu-start', startDataRaw])
+    openToken.attrs.push(['data-yugu-prefix', startPrefix])
     if (foundEnd && endSuffix) {
-      if (endDataRaw) openToken.attrs.push(['data-tbc-end', endDataRaw])
-      openToken.attrs.push(['data-tbc-suffix', endSuffix])
+      if (endDataRaw) openToken.attrs.push(['data-yugu-end', endDataRaw])
+      openToken.attrs.push(['data-yugu-suffix', endSuffix])
       if (endDataRaw) openToken.attrs.push(opts.closedAttr)
     }
     openToken.map = [startLine, endLineNum]
@@ -80,7 +80,6 @@ export function tbcPlugin(md, options) {
       try {
         openToken.meta.startData = JSON.parse(startDataRaw)
       } catch (e) {
-        console.warn('[tbcPlugin] startData JSON parse error:', startDataRaw, e)
         openToken.meta.startData = startDataRaw
       }
     } else {
@@ -93,7 +92,6 @@ export function tbcPlugin(md, options) {
         try {
           openToken.meta.endData = JSON.parse(endDataRaw)
         } catch (e) {
-          console.warn('[tbcPlugin] endData JSON parse error:', endDataRaw, e)
           openToken.meta.endData = endDataRaw
         }
       } else {
@@ -116,14 +114,14 @@ export function tbcPlugin(md, options) {
       state.tokens.push(...tokens)
     }
 
-    state.push('tbc_block_close', 'div', -1)
+    state.push('yugu_block_close', 'div', -1)
     return true
   })
 
-  md.renderer.rules.tbc_block_open = function (tokens, idx) {
+  md.renderer.rules.yugu_block_open = function (tokens, idx) {
     return `<div${md.renderer.renderAttrs(tokens[idx])}>`
   }
-  md.renderer.rules.tbc_block_close = function () {
+  md.renderer.rules.yugu_block_close = function () {
     return '</div>'
   }
 }
