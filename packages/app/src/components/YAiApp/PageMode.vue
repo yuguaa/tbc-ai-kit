@@ -424,14 +424,16 @@ export default {
       let parsedData
       switch (eventType) {
         case 'onopen':
-           lastMessage.answer += '::: yugu-start[app]${"a":1,"b":[{"c":222}]}$ \napp开始了\n # 一级标题\n ::: yugu-start[sub]\n # 二级标签开始了\n  ::: yugu-end[sub] \n # 二级标签结束了\n ::: yugu-end[app]$这里是数据，可以是字符串和json$'
+          lastMessage.answer +=
+            '::: yugu-start[app]${"a":1,"b":[{"c":222}]}$ \napp开始了\n # 一级标题\n ::: yugu-start[sub]\n # 二级标签开始了\n  ::: yugu-end[sub] \n- [ ] 7:30-8:00 晨跑3公里\n- [ ] 每工作1小时起身拉伸/喝水\n # 二级标签结束了\n '
           break
         case 'onmessage':
           parsedData = JSON.parse(data.event.data)
           lastMessage.id = parsedData.conversation_id
-          lastMessage.answer += data.data || ''
+          lastMessage.answer += data.data || ' '
           break
         case 'onend':
+          lastMessage.answer += '\n\n\n\n\n::: yugu-end[app]$这里是数据，可以是字符串和json$ \n\n\n\n\n '
           console.log('SSE连接已结束:', data)
           if (this.currentSessionId === APP_NEW_SESSTION_ID && this.newSesstionId !== APP_NEW_SESSTION_ID) {
             //新会话第一次加入到列表中

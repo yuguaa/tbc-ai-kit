@@ -1,11 +1,13 @@
 <script>
 import Think from './Think.vue'
+import YuguBlock from './YuguBlock.vue'
 import md from './MarkdowEngine/index.js'
 
 export default {
   name: 'YMdRenderer',
   components: {
     Think,
+    YuguBlock,
   },
   props: {
     content: {
@@ -47,6 +49,7 @@ export default {
         inline: 'span',
         text: 'span',
         think: Think, // 处理 think 标签
+        yugu_block_open: 'div',
       }
       for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
@@ -69,6 +72,31 @@ export default {
             result.push(vnode)
           }
           i = j // 跳过处理过的 link token
+          continue
+        }
+        if (token.type === 'yugu_block_open') {
+          const blockTokens = []
+          let j = i
+          while (j < tokens.length) {
+            blockTokens.push(tokens[j])
+            if (tokens[j].type === 'yugu_block_close') break
+            j++
+          }
+          const vnode = h(
+            YuguBlock,
+            {
+              key: `${keyPrefix}-yugu-block-${i}`, // 设置唯一 key
+              class: 'yugu-block',
+              attrs: token.meta,
+            },
+            this.renderTokens(h, blockTokens.slice(1, blockTokens.length - 1), `${keyPrefix}-yugu-block-slot-${i}`),
+          )
+          if (stack.length) {
+            stack[stack.length - 1].children.push(vnode)
+          } else {
+            result.push(vnode)
+          }
+          i = j // 跳过处理过的 yugu_block token
           continue
         }
         if (token.type === 'fence') {
@@ -112,20 +140,13 @@ export default {
         } else if (/_open$/.test(token.type)) {
           stack.push({ token, children: [] })
         } else if (/_close$/.test(token.type)) {
-          const { token: openToken, children } = stack.pop()
-          const tag = openToken.tag || tagMap[openToken.type] || 'div'
+          const { token: openToken, children } = stack.length && stack.pop()
+          const tag = openToken?.tag || tagMap[openToken?.type] || 'div'
           const attrs = {}
-
-          if (openToken.attrs) {
+          if (openToken?.attrs) {
             openToken.attrs.forEach(([k, v]) => (attrs[k] = v))
           }
-          // // 特殊处理 link_open
-          // if (openToken.type === 'link_open') {
-          //   attrs.target = '_blank'
-          //   attrs.rel = 'noopener noreferrer'
-          // }
           const vnode = h(tag, { key: `${keyPrefix}-${i}`, attrs }, children)
-
           if (stack.length) {
             stack[stack.length - 1].children.push(vnode)
           } else {
@@ -164,13 +185,7 @@ export default {
     },
   },
   render(h) {
-    // return h('div', { class: 'markdown-body' }, this.renderTokens(h, this.tokens))
-    return h('div', {
-      class: 'markdown-body',
-      domProps: {
-        innerHTML: md.renderer.render(this.tokens, md.options, {}),
-      },
-    })
+    return h('div', { class: 'markdown-body' }, this.renderTokens(h, this.tokens))
   },
 }
 </script>
