@@ -2,7 +2,7 @@ export function tbcPlugin(md, options) {
   // 默认选项
   const opts = Object.assign(
     {
-      onDataExtract: null, // 回调函数，接收 { startPrefix, startData, endSuffix, endData, startJson, endJson }
+      onDataExtract: null, // 回调函数，接收 { startPrefix, startData, endSuffix, endData }
       closedAttr: ['data-closed', 'true'], // 结束标记存在时添加的属性
     },
     options,
@@ -14,20 +14,21 @@ export function tbcPlugin(md, options) {
     let max = state.eMarks[startLine]
     let lineText = state.src.slice(pos, max)
 
-    // 检查是否以 ::: tbc-start[prefix]{{data}} 开头
-    const startMatch = lineText.match(/^::: tbc-start\[([^\]]*)\]{{([^}]*)}}/)
+    // 正则改为匹配 ::: tbc-start[prefix]$json_data$
+    // 注意 $ 需要转义，且用非贪婪模式匹配数据部分
+    const startMatch = lineText.match(/^::: tbc-start\[([^\]]*)\]\$(.+?)\$/)
     if (!startMatch) return false
 
     if (silent) return true
 
     const startPrefix = startMatch[1].trim()
-    const startData = startMatch[2].trim()
+    const startDataRaw = startMatch[2].trim()
 
     let content = ''
     let endLineNum = startLine + 1
     let foundEnd = false
     let endSuffix = null
-    let endData = null
+    let endDataRaw = null
 
     // 嵌套计数器，当前块起始为1
     let nestingLevel = 1
@@ -37,20 +38,20 @@ export function tbcPlugin(md, options) {
       max = state.eMarks[endLineNum]
       lineText = state.src.slice(pos, max)
 
-      // 检测嵌套的开始标记
-      const nestedStartMatch = lineText.match(/^::: tbc-start\[([^\]]*)\]{{([^}]*)}}/)
+      // 嵌套开始标记
+      const nestedStartMatch = lineText.match(/^::: tbc-start\[([^\]]*)\]\$(.+?)\$/)
       if (nestedStartMatch) {
         nestingLevel++
       }
 
-      // 检测结束标记
-      const endMatch = lineText.match(/^::: tbc-end\[([^\]]*)\]{{([^}]*)}}/)
+      // 结束标记
+      const endMatch = lineText.match(/^::: tbc-end\[([^\]]*)\]\$(.+?)\$/)
       if (endMatch) {
         nestingLevel--
         if (nestingLevel === 0) {
           foundEnd = true
           endSuffix = endMatch[1].trim()
-          endData = endMatch[2].trim()
+          endDataRaw = endMatch[2].trim()
           break
         }
       }
@@ -59,7 +60,7 @@ export function tbcPlugin(md, options) {
       endLineNum++
     }
 
-    // 如果没有找到结束标记，收集到 endLine
+    // 如果没找到结束标记，收集到文档末尾
     if (!foundEnd) {
       while (endLineNum < endLine) {
         pos = state.bMarks[endLineNum] + state.tShift[endLineNum]
@@ -69,72 +70,57 @@ export function tbcPlugin(md, options) {
       }
     }
 
-    // 更新 state
     state.line = endLineNum + (foundEnd ? 1 : 0)
 
-    // 创建开始 token
     let openToken = state.push('tbc_block_open', 'div', 1)
     openToken.attrs = openToken.attrs || []
     openToken.attrs.push(['class', 'tbc'])
-    openToken.attrs.push(['data-tbc-start', startData])
+    openToken.attrs.push(['data-tbc-start', startDataRaw])
     openToken.attrs.push(['data-tbc-prefix', startPrefix])
-    if (foundEnd && endData && endSuffix) {
-      openToken.attrs.push(['data-tbc-end', endData])
+    if (foundEnd && endDataRaw && endSuffix) {
+      openToken.attrs.push(['data-tbc-end', endDataRaw])
       openToken.attrs.push(['data-tbc-suffix', endSuffix])
       openToken.attrs.push(opts.closedAttr)
     }
     openToken.map = [startLine, endLineNum]
 
-    // 存储数据到 token.meta
     openToken.meta = openToken.meta || {}
     openToken.meta.startPrefix = startPrefix
-    openToken.meta.startData = startData
-    if (foundEnd && endData && endSuffix) {
-      openToken.meta.endSuffix = endSuffix
-      openToken.meta.endData = endData
-    }
-
-    // 尝试解析 JSON
-    let startJson = null
-    let endJson = null
     try {
-      startJson = JSON.parse(startData)
-      openToken.meta.startData = startJson
+      openToken.meta.startData = JSON.parse(startDataRaw)
     } catch (e) {
-      // 保留原始 startData
+      console.warn('[tbcPlugin] startData JSON parse error:', startDataRaw, e)
+      openToken.meta.startData = startDataRaw
     }
-    if (foundEnd && endData) {
+    if (foundEnd && endDataRaw && endSuffix) {
+      openToken.meta.endSuffix = endSuffix
       try {
-        endJson = JSON.parse(endData)
-        openToken.meta.endData = endJson
+        openToken.meta.endData = JSON.parse(endDataRaw)
       } catch (e) {
-        // 保留原始 endData
+        console.warn('[tbcPlugin] endData JSON parse error:', endDataRaw, e)
+        openToken.meta.endData = endDataRaw
       }
     }
 
-    // 调用回调函数
     if (opts.onDataExtract) {
       opts.onDataExtract({
         startPrefix,
-        startData,
+        startData: openToken.meta.startData,
         endSuffix,
-        endData,
+        endData: openToken.meta.endData,
       })
     }
 
-    // 解析内部 Markdown 内容
     if (content.trim()) {
       const tokens = []
       md.block.parse(content, md, state.env, tokens)
       state.tokens.push(...tokens)
     }
 
-    // 结束 token
     state.push('tbc_block_close', 'div', -1)
     return true
   })
 
-  // 渲染规则
   md.renderer.rules.tbc_block_open = function (tokens, idx) {
     return `<div${md.renderer.renderAttrs(tokens[idx])}>`
   }

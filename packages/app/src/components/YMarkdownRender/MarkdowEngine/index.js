@@ -10,8 +10,8 @@ import markdownItToc from 'markdown-it-toc-done-right'
 import mila from 'markdown-it-link-attributes'
 import Shiki from '@shikijs/markdown-it'
 import markdownItAttrs from 'markdown-it-attrs'
-import { markdownItThinkPlugin } from './thinkPlugin'
-import { tbcPlugin } from './tbcPlugin'
+import { markdownItThinkPlugin } from './plugins/thinkPlugin'
+import { tbcPlugin } from './plugins/tbcPlugin'
 const md = new MarkdownIt({
   html: true,
   xhtmlOut: true,

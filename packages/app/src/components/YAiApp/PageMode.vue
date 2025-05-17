@@ -424,7 +424,7 @@ export default {
       let parsedData
       switch (eventType) {
         case 'onopen':
-          lastMessage.answer = `\n\n\n::: tbc-start[app]{{fff}} \n\n\n收到发圣诞节疯狂啦十九大理发店` + '\n\n\n\n\n\n   ::: tbc-start[sub]{{tbc-sub-start-data}} \n\n\n'
+          lastMessage.answer = '\n\n\n::: tbc-start[app] \n\n\n$ 收到发圣诞 $\n\n 节疯狂啦十九大理发店' + '\n\n\n\n\n\n   ::: tbc-start[sub]$tbc-sub-start-data$ \n\n\n'
           break
         case 'onmessage':
           parsedData = JSON.parse(data.event.data)
@@ -433,8 +433,8 @@ export default {
           break
         case 'onend':
           lastMessage.answer +=
-            '\n\n\n::: tbc-end[sub]{{tbc-sub-end-data}} \n\n\n' +
-            '\n\n\n::: tbc-end[app]{{tbc-end-data}} \n\n\nfsajdlkjflas'
+            '\n\n\n::: tbc-end[sub]$tbc-sub-end-data$ \n\n\n' +
+            '\n\n\n::: tbc-end[app]$tbc-end-data$ \n\n\nfsajdlkjflas'
           console.log('SSE连接已结束:', data)
           if (this.currentSessionId === APP_NEW_SESSTION_ID && this.newSesstionId !== APP_NEW_SESSTION_ID) {
             //新会话第一次加入到列表中

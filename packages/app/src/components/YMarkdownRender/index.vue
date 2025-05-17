@@ -1,6 +1,6 @@
 <script>
 import Think from './Think.vue'
-import md from '@/utils/md'
+import md from './MarkdowEngine/index.js'
 
 export default {
   name: 'YMdRenderer',
@@ -84,7 +84,7 @@ export default {
           }
           continue
         }
-        if(token.type==='html_inline'){
+        if (token.type === 'html_inline') {
           const html = md.renderer.render([token], md.options, {})
           const vnode = h('span', {
             key: `${keyPrefix}-html-inline-${i}`,
@@ -165,15 +165,12 @@ export default {
   },
   render(h) {
     // return h('div', { class: 'markdown-body' }, this.renderTokens(h, this.tokens))
-    return h(
-      'div',
-      {
-        class: 'markdown-body',
-        domProps: {
-          innerHTML: md.renderer.render(this.tokens, md.options, {}),
-        },
+    return h('div', {
+      class: 'markdown-body',
+      domProps: {
+        innerHTML: md.renderer.render(this.tokens, md.options, {}),
       },
-    )
+    })
   },
 }
 </script>
