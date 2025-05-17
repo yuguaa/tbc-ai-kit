@@ -13,9 +13,6 @@ export default {
   data() {
     return {}
   },
-  mounted() {
-    console.log('YuguBlock created', this)
-  },
   methods: {},
 }
 </script>

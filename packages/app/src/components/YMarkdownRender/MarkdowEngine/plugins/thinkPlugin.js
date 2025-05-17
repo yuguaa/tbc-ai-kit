@@ -1,4 +1,4 @@
-export function markdownItThinkPlugin(md) {
+export default function markdownItThinkPlugin(md) {
   md.core.ruler.push('think', function (state) {
     const tokens = state.tokens
     const thinkTokens = []
@@ -43,8 +43,6 @@ export function markdownItThinkPlugin(md) {
         thinkTokens.push(token)
       }
     }
-
-    // 如果没有遇到 </think> 结束标签，我们将剩余内容视为 think 标签内容
     if (insideThink) {
       const thinkToken = new state.Token('think', 'div', 0)
       thinkToken.content = content

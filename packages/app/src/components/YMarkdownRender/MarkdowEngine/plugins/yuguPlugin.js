@@ -1,4 +1,4 @@
-export function yuguPlugin(md, options) {
+export default function markdownItYuguPlugin(md, options) {
   const opts = Object.assign(
     {
       onDataExtract: null, // 回调函数，接收 { startPrefix, startData, endSuffix, endData }
