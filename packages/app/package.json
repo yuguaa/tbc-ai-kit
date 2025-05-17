@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@21tb/tbc-sse": "catalog:",
+    "@yugu/tbc-sse": "catalog:",
     "@shikijs/markdown-it": "catalog:",
     "deepmerge": "catalog:",
     "github-markdown-css": "catalog:",
@@ -24,6 +25,7 @@
     "markdown-it-mark": "catalog:",
     "markdown-it-task-lists": "catalog:",
     "markdown-it-toc-done-right": "catalog:",
+    "markdown-it-attrs": "catalog:",
     "popper.js": "catalog:",
     "vue": "catalog:",
     "vue-cookies": "catalog:"

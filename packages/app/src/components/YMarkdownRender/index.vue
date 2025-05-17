@@ -164,7 +164,16 @@ export default {
     },
   },
   render(h) {
-    return h('div', { class: 'markdown-body' }, this.renderTokens(h, this.tokens))
+    // return h('div', { class: 'markdown-body' }, this.renderTokens(h, this.tokens))
+    return h(
+      'div',
+      {
+        class: 'markdown-body',
+        domProps: {
+          innerHTML: md.renderer.render(this.tokens, md.options, {}),
+        },
+      },
+    )
   },
 }
 </script>

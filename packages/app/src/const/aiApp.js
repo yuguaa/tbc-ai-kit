@@ -198,7 +198,6 @@ const APP_NEW_SESSTION_ID = 'APP_NEW_SESSTION_ID'
 const APP_DEFAULT_TARGET_DOM = 'APP_DEFAULT_TARGET_DOM'
 
 const getApiConfigByConfig = (config) => {
-  console.log(`🚀 ~ config.params.boxType:`, config.params.boxType)
   if (WORK_FLOW_BOX_TYPES.includes(config.params.boxType)) {
     return deepmerge(WORK_FLOW_API_INTERFACE, config)
   }

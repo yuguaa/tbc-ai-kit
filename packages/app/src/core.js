@@ -1,7 +1,8 @@
 import deepmerge from 'deepmerge'
 import Vue from 'vue'
 import YAiApp from '@/components/YAiApp'
-import TbcSSE from '@21tb/tbc-sse'
+import TbcSSE from '@yugu/tbc-sse'
+// import TbcSSE from '@21tb/tbc-sse'
 import {
   // APP_NEW_SESSTION_ID,
   APP_DEFAULT_TARGET_DOM,
