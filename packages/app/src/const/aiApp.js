@@ -94,6 +94,10 @@ const DEFAULT_API_CONFIG = {
   },
   timeout: 1000 * 60 * 3,
 }
+const DEFAULT_CONVERSATION_API_CONFIG = {
+  mode: '',
+  pageSize: 20,
+}
 const NORMAL_API_URL = '/gpt/chat/difySendMsgSteam'
 const WORK_FLOW_API_URL = '/gpt/chat/sendMsgSteam'
 const API_TIMEOUT = 1000 * 60 * 3
@@ -230,6 +234,7 @@ export {
   APP_DEFAULT_TARGET_DOM,
   DEFAULT_MODE_CONFIG,
   DEFAULT_API_CONFIG,
+  DEFAULT_CONVERSATION_API_CONFIG,
   WORK_FLOW_API_URL,
   NORMAL_API_URL,
   WORK_FLOW_API_INTERFACE,

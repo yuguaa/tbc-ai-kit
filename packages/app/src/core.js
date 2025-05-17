@@ -8,6 +8,7 @@ import {
   APP_DEFAULT_TARGET_DOM,
   DEFAULT_MODE_CONFIG,
   DEFAULT_API_CONFIG,
+  DEFAULT_CONVERSATION_API_CONFIG,
   // NORMAL_BOX_TYPES,
   // WORK_FLOW_BOX_TYPES,
   getApiConfigByConfig,
@@ -24,22 +25,14 @@ class TbcAiApp {
   apiResInterceptors = [] // 响应拦截器
   tbcSSE = new TbcSSE({}) // SSE 实例
   prefix = '' // 域名
-  constructor({
-    target,
-    modeConfig = {},
-    apiConfig = {},
-    conversationApiConfig = {
-      mode: '',
-      pageSize: 20,
-    },
-  }) {
+  constructor({ target, modeConfig = {}, apiConfig = {}, conversationApiConfig }) {
     if (!target) {
       const app = document.createElement('div')
       app.id = APP_DEFAULT_TARGET_DOM
       document.body.appendChild(app)
       target = `#${APP_DEFAULT_TARGET_DOM}`
     }
-    this.conversationApiConfig = conversationApiConfig
+    this.conversationApiConfig = deepmerge(DEFAULT_CONVERSATION_API_CONFIG, conversationApiConfig || {})
     this.modeConfig = deepmerge(DEFAULT_MODE_CONFIG, modeConfig)
     apiConfig = deepmerge(DEFAULT_API_CONFIG, apiConfig)
     this.apiConfig = getApiConfigByConfig(apiConfig)

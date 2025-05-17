@@ -33,7 +33,7 @@ if (process.env.NODE_ENV === 'development') {
           },
           modeVisible: false,
           isShowSidebar: true,
-          isFullMode: true,
+          isFullMode: false,
           showHeaderCloseIcon: false,
           showHeaderToggleScreenIcon: true,
           showHeaderAvatarIcon: true,
@@ -89,9 +89,12 @@ if (process.env.NODE_ENV === 'development') {
         modeConfig: this.pageConfig,
         apiConfig: {
           params: {
-            // boxType: 'AT_017',
+            boxType: 'AT_004',
             types: 'SPARK',
           },
+        },
+        conversationApiConfig: {
+          pageSize: 2,
         },
       })
       // sse请求和响应拦截器

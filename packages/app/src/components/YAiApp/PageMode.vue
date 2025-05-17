@@ -30,7 +30,11 @@
               <span class="y-ml-4">新会话</span>
             </div>
           </div>
-          <div v-if="conversations.length" class="y-layout-sidebar-content y-overflow-auto y-p-20 y-scrollbar-common">
+          <div
+            v-if="conversations.length"
+            class="y-layout-sidebar-content y-layout-conversation-scroll-el y-overflow-auto y-p-20 y-scrollbar-common"
+            @scroll="onConversationsScroll"
+          >
             <y-conversations
               :showIcon="!modeConfig.isFullMode"
               :showBack="!modeConfig.isFullMode"
@@ -147,14 +151,7 @@
                         </template>
                         <span>创建新对话</span>
                       </y-button>
-                      <y-button
-                        class="y-ml-12"
-                        @click="
-                          () => {
-                            showMiniConversations = true
-                          }
-                        "
-                      >
+                      <y-button class="y-ml-12" @click="showConversation">
                         <template #icon>
                           <svg-icon icon-class="history" />
                         </template>
@@ -172,7 +169,8 @@
               >
                 <div
                   v-if="conversations.length"
-                  class="y-conversations-mini-content y-absolute y-bottom-0 y-right-0 y-top-0 y-box-border y-flex y-h-full y-w-full y-flex-col y-items-center y-overflow-hidden y-overflow-y-auto y-p-20 y-scrollbar-common"
+                  class="y-conversations-mini-content y-layout-conversation-scroll-el y-absolute y-bottom-0 y-right-0 y-top-0 y-box-border y-flex y-h-full y-w-full y-flex-col y-items-center y-overflow-hidden y-overflow-y-auto y-p-20 y-scrollbar-common"
+                  @scroll="onConversationsScroll"
                 >
                   <!-- 非全屏状态下的conversations -->
                   <y-conversations
@@ -239,12 +237,13 @@ export default {
         sessionId: APP_NEW_SESSTION_ID,
       },
       page: {
-        pageSize: 0,
+        pageSize: this.conversationApiConfig.pageSize,
         pageNum: 1,
       },
+      isConversationsLoading: false,
+      hasMore: true,
       pageCount: 0,
       total: 0,
-      defaultPageSize: 30,
       showMiniConversations: false,
     }
   },
@@ -282,7 +281,6 @@ export default {
     },
   },
   mounted() {
-    this.page.pageSize = this.conversationApiConfig.pageSize || this.defaultPageSize
     this.subscribeSSEEvents()
     this.getConversations()
   },
@@ -312,7 +310,21 @@ export default {
         return interceptor(acc, interceptorType) || acc
       }, data)
     },
+    onConversationsScroll(event) {
+      const { scrollTop, scrollHeight, clientHeight } = event.target
+      if (scrollTop + clientHeight >= scrollHeight - 10) {
+        this.getConversations()
+      }
+    },
+    showConversation() {
+      this.showMiniConversations = true
+      this.checkConversationFull()
+    },
     getConversations() {
+      if (this.isConversationsLoading || !this.hasMore) {
+        return
+      }
+      this.isConversationsLoading = true
       const params = {
         boxType: this.apiConfig.params.boxType,
       }
@@ -329,23 +341,40 @@ export default {
       const postData = this.executeInterceptors('apiReqInterceptors', 'getConversations', params)
       this.conversationApi(postData)
         .then((res) => {
+          this.isConversationsLoading = false
           const result = this.executeInterceptors('apiResInterceptors', 'getConversations', res)
           this.conversations = result.bizResult || result.data.items || []
-          console.log(`🚀 ~ this.conversations:`, this.conversations)
           if (this.conversationApiConfig.mode === 'page') {
             this.total = result.data.total
+          } else {
+            this.total = result.bizResult.length
           }
+          this.hasMore = this.conversations.length < this.total
+
+          this.checkConversationFull()
         })
         .catch((err) => {
+          this.isConversationsLoading = false
           console.error(err)
           this.$refs.YMessage.addMessage('获取对话列表失败', 'error')
         })
+    },
+    checkConversationFull() {
+      // 检测是否撑满容器
+      this.$nextTick(() => {
+        const scrollEl = document.querySelector('.y-layout-conversation-scroll-el')
+        if (!scrollEl) return
+        if (scrollEl.scrollHeight <= scrollEl.clientHeight && this.hasMore) {
+          this.getConversations() // 自动加载下一页
+        }
+      })
     },
     closeSiderbar() {
       this.setModeConfigItem('isShowSidebar', false)
     },
     openSiderbar() {
       this.setModeConfigItem('isShowSidebar', true)
+      this.checkConversationFull()
     },
     closePage() {
       this.setModeConfigItem('modeVisible', false)
