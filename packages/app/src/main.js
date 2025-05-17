@@ -33,7 +33,7 @@ if (process.env.NODE_ENV === 'development') {
           },
           modeVisible: false,
           isShowSidebar: true,
-          isFullMode: false,
+          isFullMode: true,
           showHeaderCloseIcon: false,
           showHeaderToggleScreenIcon: true,
           showHeaderAvatarIcon: true,

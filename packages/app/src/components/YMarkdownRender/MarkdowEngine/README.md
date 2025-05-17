@@ -20,23 +20,25 @@
 ```js
 import MarkdownIt from 'markdown-it'
 import markdownItAttrs from 'markdown-it-attrs'
-import yuguPlugin from '@yugu/yugu-plugin'
-import { yuguPlugin } from '@yugu/yugu-plugin'
+import markdownItDataBlock from '@yuguaa/markdown-it-data-block'
 const md = new MarkdownIt()
   .use(markdownItAttrs)
-  .use(yuguPlugin, {
+  .use(markdownItDataBlock, {
     onDataExtract: (data) => {
       console.log('提取的 data:', data)
     },
   })
-const result = md.render(`
-# 这是一个标题
-::: yugu-start[app]${"a":1,"b":[{"c":222}]}$
-::: yugu-start[sub]${"a":1,"b":[{"c":222}]}$
-::: yugu-end[sub]$支持嵌套，但必须合并标签嵌套$
-::: yugu-end[app]$这里是数据，可以是字符串和json$
-`)
-console.log(result)
+const html = md.render(
+  `::: yugu-start[app]\${"a": 1,"b":[{"c":222}]}\$
+    app 块内容
+    \n::: yugu-start[sub]\${"a": 1,"b":[{"c":55}]}\$
+    sub 块内容
+    \n::: yugu-end[sub]\$支持嵌套，但必须合并标签嵌套\$
+    app 块内容结束，在app块内
+    \n::: yugu-end[app]\$这里是数据，可以是字符串和json\$
+    app 块内容外`
+)
+console.log(html)
 
 ```
 

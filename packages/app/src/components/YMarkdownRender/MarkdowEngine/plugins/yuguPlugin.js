@@ -1,7 +1,6 @@
 export default function markdownItYuguPlugin(md, options) {
   const opts = Object.assign(
     {
-      onDataExtract: null,
       closedAttr: ['data-closed', 'true'],
     },
     options,
@@ -87,15 +86,6 @@ export default function markdownItYuguPlugin(md, options) {
       } catch (e) {
         openToken.meta.endData = endDataRaw
       }
-    }
-
-    if (opts.onDataExtract) {
-      opts.onDataExtract({
-        startPrefix,
-        startData: openToken.meta.startData,
-        endSuffix,
-        endData: openToken.meta.endData,
-      })
     }
 
     if (content.trim()) {
