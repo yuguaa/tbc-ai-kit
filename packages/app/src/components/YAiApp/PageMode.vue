@@ -504,10 +504,7 @@ export default {
             // FIXME: 由于自定义返回div导致数据格式不统一，没有conversation_id导致报错，正常应该只保留下一行
             console.log(`🚀 ~ data.conversation_id:`, data.conversation_id)
             currentMessageConversationId = data.conversation_id
-            // FIXME:如果没有conversation_id，使用当前会话id,需要处理,防止报错的临时写法
-            if (!currentMessageConversationId) {
-              currentMessageConversationId = this.currentSessionId
-            }
+            
             if (
               currentMessageConversationId &&
               this.currentSessionId === APP_NEW_SESSTION_ID &&
@@ -518,8 +515,9 @@ export default {
               this.newSesstionId = APP_NEW_SESSTION_ID
               this.conversations.push(this.currentConversation)
             } else {
+              // FIXME: item.sessionId === this.currentSessionId
               currentMessageConversation = this.conversations.find(
-                (item) => item.sessionId === currentMessageConversationId,
+                (item) => item.sessionId === currentMessageConversationId || item.sessionId === this.currentSessionId,
               )
               // FIXME:如果没有conversation_id，使用当前会话id,需要处理,防止报错的临时写法
               if (!currentMessageConversation) {

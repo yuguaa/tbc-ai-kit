@@ -130,9 +130,7 @@ export default {
             Think,
             {
               class: 'think-inline',
-              props: {
-                status: token.meta?.status || 'UN_START',
-              },
+              props: token.meta,
             },
             this.renderTokens(h, md.parse(token.content, {}), `${keyPrefix}-think`),
           )
