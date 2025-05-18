@@ -500,7 +500,6 @@ export default {
           } catch (error) {
             data = event.data
           }
-          console.log(`🚀 ~ data:`, data)
           if (data.event === 'message') {
             // FIXME: 由于自定义返回div导致数据格式不统一，没有conversation_id导致报错，正常应该只保留下一行
             console.log(`🚀 ~ data.conversation_id:`, data.conversation_id)
@@ -528,7 +527,7 @@ export default {
               }
               if (currentMessageConversation) {
                 lastMessage = currentMessageConversation.messages[currentMessageConversation.messages.length - 1]
-                lastMessage.answer += data.answer || ' '
+                lastMessage.answer += data.answer || ''
               }
             }
           } else if (data.event === 'message_end' || data.event === 'workflow_finished') {
@@ -576,6 +575,14 @@ export default {
       if (sessionId === this.currentSessionId) {
         return
       }
+      // FIXME: 由于后端返回的会话id和当前会话id不一致，导致报错，临时处理
+      this.currentConversation.abortController?.abort()
+      this.currentConversation.messages.forEach((item) => {
+        if (item.isGenerating) {
+          item.isGenerating = false
+        }
+      })
+
       this.cancelRequest()
       this.showMiniConversations = false
       this.currentSessionId = sessionId
