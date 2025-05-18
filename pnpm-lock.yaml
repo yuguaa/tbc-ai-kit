@@ -6,15 +6,15 @@ settings:
 
 catalogs:
   default:
-    '@21tb/tbc-sse':
-      specifier: ^0.0.6
-      version: 0.0.6
     '@babel/core':
       specifier: ^7.12.16
       version: 7.27.1
     '@babel/eslint-parser':
       specifier: ^7.12.16
       version: 7.27.1
+    '@microsoft/fetch-event-source':
+      specifier: ^2.0.1
+      version: 2.0.1
     '@shikijs/markdown-it':
       specifier: ^3.4.1
       version: 3.4.1
@@ -27,9 +27,6 @@ catalogs:
     '@vue/cli-service':
       specifier: ~5.0.0
       version: 5.0.8
-    '@yugu/tbc-sse':
-      specifier: ^0.0.1
-      version: 0.0.1
     autoprefixer:
       specifier: ^10.4.16
       version: 10.4.21
@@ -149,15 +146,15 @@ importers:
 
   packages/app:
     dependencies:
-      '@21tb/tbc-sse':
+      '@microsoft/fetch-event-source':
         specifier: 'catalog:'
-        version: 0.0.6
+        version: 2.0.1
       '@shikijs/markdown-it':
         specifier: 'catalog:'
         version: 3.4.1
-      '@yugu/tbc-sse':
-        specifier: 'catalog:'
-        version: 0.0.1
+      '@yugu/markdown-it-data-block':
+        specifier: ^0.0.2
+        version: 0.0.2
       deepmerge:
         specifier: 'catalog:'
         version: 4.3.1
@@ -287,9 +284,6 @@ importers:
         version: 6.3.5(@types/node@22.15.16)(jiti@1.21.7)(less@4.3.0)(terser@5.39.0)(yaml@2.7.1)
 
 packages:
-
-  '@21tb/tbc-sse@0.0.6':
-    resolution: {integrity: sha512-IvJNB79jUyVfqnVfYy+pDte1EVSfWWBko8rrelMRt4Ad/dm7WrSoXYqhzKZ+zQIN8IASzCkOxGKEUqtPFZ1dRw==}
 
   '@achrinza/node-ipc@9.2.9':
     resolution: {integrity: sha512-7s0VcTwiK/0tNOVdSX9FWMeFdOEcsAOz9HesBldXxFMaGvIak7KC2z9tV9EgsQXn6KUsWsfIkViMNuIo0GoZDQ==}
@@ -1005,9 +999,11 @@ packages:
   '@humanwhocodes/config-array@0.5.0':
     resolution: {integrity: sha512-FagtKFz74XrTl7y6HCzQpwDfXP0yhxe9lHLD1UZxjvZIcbyRz8zTFF/yYNfSfzU414eDwZ1SrO0Qvtyf+wFMQg==}
     engines: {node: '>=10.10.0'}
+    deprecated: Use @eslint/config-array instead
 
   '@humanwhocodes/object-schema@1.2.1':
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
+    deprecated: Use @eslint/object-schema instead
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -1036,6 +1032,9 @@ packages:
 
   '@leichtgewicht/ip-codec@2.0.5':
     resolution: {integrity: sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==}
+
+  '@microsoft/fetch-event-source@2.0.1':
+    resolution: {integrity: sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==}
 
   '@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1':
     resolution: {integrity: sha512-54/JRvkLIzzDWshCWfuhadfrfZVPiElY8Fcgmg1HroEly/EDSszzhBAsarCux+D/kOslTRquNzuyGSmUSTTHGg==}
@@ -1525,8 +1524,8 @@ packages:
   '@xtuc/long@4.2.2':
     resolution: {integrity: sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==}
 
-  '@yugu/tbc-sse@0.0.1':
-    resolution: {integrity: sha512-4jJLiWiA5RzSVbB83G00omr6mTm7LafndcNLBkKF9X8hKPTjXHW7bOrLdog2X6JgZtIKJJOAqxLnFg0qBdtPGw==}
+  '@yugu/markdown-it-data-block@0.0.2':
+    resolution: {integrity: sha512-5AmKGg1t+G3QgzrxavfJQZIIY47zYTsbGPX3ubZCGgNMUwPJeGo6n7rptB/UyHL8hceDPMKDokqbFTHEeOSXKQ==}
 
   accepts@1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
@@ -2647,6 +2646,7 @@ packages:
   eslint@7.32.0:
     resolution: {integrity: sha512-VHZ8gX+EDfz+97jGcgyGCyRia/dPOd6Xh9yPv8Bl1+SoaIwD+a/vlrOmGRUyOYu7MwUhc7CxqeaDZU13S4+EpA==}
     engines: {node: ^10.12.0 || >=12.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@7.3.1:
@@ -2930,6 +2930,7 @@ packages:
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
+    deprecated: Glob versions prior to v9 are no longer supported
 
   globals@11.12.0:
     resolution: {integrity: sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==}
@@ -3148,6 +3149,7 @@ packages:
 
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
+    deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
 
   inherits@2.0.3:
     resolution: {integrity: sha512-x00IRNXNy63jwGkJmzPigoySHbaqpNuzKbBOmzK+g2OdZpQ9w+sxCN+VSB3ja7IAge2OP2qpfxTjeNcyjmW1uw==}
@@ -4610,6 +4612,7 @@ packages:
 
   rimraf@3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
 
   rollup@4.40.2:
@@ -5373,6 +5376,7 @@ packages:
 
   vue@2.7.16:
     resolution: {integrity: sha512-4gCtFXaAA3zYZdTp5s4Hl2sozuySsgz4jy1EnpBHNfpMa9dK1ZCG7viqBPCwXtmgc8nHqUsAu3G4gtmXkkY3Sw==}
+    deprecated: Vue 2 has reached EOL and is no longer actively maintained. See https://v2.vuejs.org/eol/ for more details.
 
   watchpack@2.4.2:
     resolution: {integrity: sha512-TnbFSbcOCcDgjZ4piURLCbJ3nJhznVh9kw6F6iokjiFPl8ONxe9A6nMDVXDiNbrSfLILs6vB07F7wLBrwPYzJw==}
@@ -5395,6 +5399,7 @@ packages:
   webpack-chain@6.5.1:
     resolution: {integrity: sha512-7doO/SRtLu8q5WM0s7vPKPWX580qhi0/yBHkOxNkv50f6qB76Zy9o2wRTrrPULqYTvQlVHuvbA8v+G5ayuUDsA==}
     engines: {node: '>=8'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   webpack-dev-middleware@5.3.4:
     resolution: {integrity: sha512-BVdTqhhs+0IfoeAf7EoH5WE+exCmqGerHfDM0IL096Px60Tq2Mn9MAbnaGUe6HiMa41KMCYF19gyzZmBcq/o4Q==}
@@ -5559,8 +5564,6 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
-
-  '@21tb/tbc-sse@0.0.6': {}
 
   '@achrinza/node-ipc@9.2.9':
     dependencies:
@@ -6415,6 +6418,8 @@ snapshots:
 
   '@leichtgewicht/ip-codec@2.0.5': {}
 
+  '@microsoft/fetch-event-source@2.0.1': {}
+
   '@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1':
     dependencies:
       eslint-scope: 5.1.1
@@ -7191,7 +7196,7 @@ snapshots:
 
   '@xtuc/long@4.2.2': {}
 
-  '@yugu/tbc-sse@0.0.1': {}
+  '@yugu/markdown-it-data-block@0.0.2': {}
 
   accepts@1.3.8:
     dependencies:

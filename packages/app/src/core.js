@@ -1,8 +1,6 @@
 import deepmerge from 'deepmerge'
 import Vue from 'vue'
 import YAiApp from '@/components/YAiApp'
-import TbcSSE from '@yugu/tbc-sse'
-// import TbcSSE from '@21tb/tbc-sse'
 import {
   // APP_NEW_SESSTION_ID,
   APP_DEFAULT_TARGET_DOM,
@@ -23,7 +21,6 @@ class TbcAiApp {
   sseResInterceptors = [] // 响应拦截器
   apiReqInterceptors = [] // 请求拦截器
   apiResInterceptors = [] // 响应拦截器
-  tbcSSE = new TbcSSE({}) // SSE 实例
   prefix = '' // 域名
   constructor({ target, modeConfig = {}, apiConfig = {}, conversationApiConfig }) {
     if (!target) {
@@ -50,7 +47,6 @@ class TbcAiApp {
           sseResInterceptors: this.sseResInterceptors,
           apiReqInterceptors: this.apiReqInterceptors,
           apiResInterceptors: this.apiResInterceptors,
-          tbcSSE: this.tbcSSE,
           conversationApi: this.conversationApi,
           conversationApiConfig: this.conversationApiConfig,
         }

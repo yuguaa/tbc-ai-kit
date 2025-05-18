@@ -37,10 +37,6 @@ const AI_APP_PROPS = {
     type: Array,
     default: () => [],
   },
-  tbcSSE: {
-    type: Object,
-    default: () => {},
-  },
   conversationApi: {
     type: Function,
   },

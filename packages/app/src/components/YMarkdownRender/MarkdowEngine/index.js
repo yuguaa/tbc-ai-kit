@@ -10,8 +10,8 @@ import markdownItToc from 'markdown-it-toc-done-right'
 import mila from 'markdown-it-link-attributes'
 import Shiki from '@shikijs/markdown-it'
 import markdownItAttrs from 'markdown-it-attrs'
+import markdownItDataBlockPlugin from '@yugu/markdown-it-data-block'
 import markdownItThinkPlugin from './plugins/thinkPlugin'
-import markdownItYuguPlugin from './plugins/yuguPlugin'
 const md = new MarkdownIt({
   html: true,
   xhtmlOut: true,
@@ -45,5 +45,5 @@ const md = new MarkdownIt({
     }),
   )
   .use(markdownItThinkPlugin)
-  .use(markdownItYuguPlugin)
+  .use(markdownItDataBlockPlugin)
 export default md

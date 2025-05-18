@@ -139,7 +139,7 @@
                 <y-sender
                   ref="YSender"
                   :sender.sync="sender"
-                  :isGenerating="isGenerating"
+                  :isGenerating="currentIsGenerating"
                   @submit="senderSubmit"
                   @stop="stopSendMsg"
                 >
@@ -192,8 +192,11 @@
 </template>
 
 <script>
+class RetriableError extends Error {}
+class FatalError extends Error {}
 import axios from 'axios'
 import deepmerge from 'deepmerge'
+import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { APP_NEW_SESSTION_ID, NORMAL_BOX_TYPES, WORK_FLOW_BOX_TYPES, AI_APP_PROPS } from '@/const/aiApp'
 import { queryChatLogList, getJSONData, saveChat } from '@/api'
 import SvgIcon from '@/components/SvgIcon'
@@ -246,6 +249,9 @@ export default {
     }
   },
   computed: {
+    currentIsGenerating() {
+      return this.currentConversation.messages?.some((message) => message && message.isGenerating)
+    },
     isGenerating() {
       return this.conversations.some((item) => {
         return item && item.messages && item.messages.some((message) => message && message.isGenerating)
@@ -279,7 +285,6 @@ export default {
     },
   },
   mounted() {
-    this.subscribeSSEEvents()
     this.getConversations()
   },
   methods: {
@@ -348,7 +353,6 @@ export default {
             this.total = result.bizResult.length
           }
           this.hasMore = this.conversations.length < this.total
-
           this.checkConversationFull()
         })
         .catch((err) => {
@@ -382,7 +386,6 @@ export default {
         this.$refs.YMessage.addMessage('已在新会话', 'warning')
         return
       } else {
-        this.stopSendMsg()
         this.cancelRequest()
         this.currentSessionId = APP_NEW_SESSTION_ID
         this.currentConversation = {
@@ -417,91 +420,23 @@ export default {
       }
     },
     stopSendMsg() {
-      this.currentConversation?.messages?.forEach((item) => {
-        if (item.isGenerating) {
-          item.isGenerating = false
-        }
-      })
-      // 暂时不加入到会话列表中
-      // if (this.newSesstionId !== APP_NEW_SESSTION_ID && this.currentConversation.sessionId === APP_NEW_SESSTION_ID) {
-      //   this.currentConversation.sessionId = this.newSesstionId
-      //   console.log(`🚀 ~ this.currentConversation:`, JSON.stringify(this.currentConversation))
-      //   this.conversations.push(this.currentConversation)
-      // }
-      this.tbcSSE.terminateRequest(JSON.stringify({ close: true }))
-    },
-    // 给sse加订阅
-    subscribeSSEEvents() {
-      // 拦截所有SSE事件
-      const eventTypes = ['onopen', 'onmessage', 'onend', 'onerror', 'oncancel', 'ontimeout', 'onfinally']
-      eventTypes.forEach((eventType) => {
-        this.tbcSSE.subscribe(eventType, (data) => {
-          const processedData = this.executeInterceptors('sseResInterceptors', eventType, data)
-          // 根据事件类型调用相应的处理方法
-          this.handleSSEEvent(eventType, processedData)
+      const currentIsGenerating = this.currentConversation.messages.some((item) => item.isGenerating)
+      if (currentIsGenerating) {
+        this.currentConversation.abortController?.abort()
+        this.currentConversation.abortController = null
+        this.currentConversation.messages.forEach((item) => {
+          if (item.isGenerating) {
+            item.isGenerating = false
+          }
         })
-      })
-    },
-    // 处理SSE事件
-    handleSSEEvent(eventType, data) {
-      const lastMessage =
-        this.currentConversation &&
-        this.currentConversation.messages &&
-        this.currentConversation.messages[this.currentConversation.messages.length - 1]
-      let parsedData
-      switch (eventType) {
-        case 'onopen':
-          lastMessage.answer +=
-            '::: yugu-start[app]${"a":1,"b":[{"c":222}]}$ \napp开始了\n # 一级标题\n::: yugu-start[sub]\n # 二级标签开始了\n::: yugu-end[sub]\n- [ ] 7:30-8:00 晨跑3公里\n- [ ] 每工作1小时起身拉伸/喝水\n\n\n # 二级标签结束了\n \n'
-          break
-        case 'onmessage':
-          parsedData = JSON.parse(data.event.data)
-          lastMessage.id = parsedData.conversation_id
-          lastMessage.answer += data.data || ' '
-          break
-        case 'onend':
-          lastMessage.answer += '\n::: yugu-end[app]$这里是数据，可以是字符串和json$\n'
-          console.log('SSE连接已结束:', data)
-          if (this.currentSessionId === APP_NEW_SESSTION_ID && this.newSesstionId !== APP_NEW_SESSTION_ID) {
-            //新会话第一次加入到列表中
-            this.conversations.push(this.currentConversation)
-            this.currentConversation.sessionId = this.newSesstionId
-            this.currentSessionId = this.newSesstionId
-          }
-          this.newSesstionId = APP_NEW_SESSTION_ID
-          lastMessage.isGenerating = false
-          break
-        case 'onerror':
-          // 处理异常情况
-          if (lastMessage) {
-            lastMessage.isGenerating = false
-          }
-          console.error('SSE发生错误:', data)
-          break
-        case 'oncancel':
-          console.log('SSE请求已取消:', data)
-          break
-        case 'ontimeout':
-          console.warn('SSE请求超时:', data)
-          break
-        case 'onfinally':
-          console.log('SSE请求完成:', data)
-          break
-        default:
-          console.warn(`未知事件类型: ${eventType}`, data)
       }
     },
     // 发送对话消息
     async sendMsg(payload) {
-      this.stopSendMsg()
       payload = deepmerge(this.apiConfig, payload)
       payload.params.sessionId = this.currentSessionId === APP_NEW_SESSTION_ID ? '' : this.currentSessionId
       payload.params.convId =
-        this.currentConversation.messages &&
-        this.currentConversation.messages[this.currentConversation.messages.length - 1]?.id
-      if (payload.params.convId && payload.params.convId.startsWith('message-')) {
-        payload.params.convId = ''
-      }
+        this.currentConversation.sessionId === APP_NEW_SESSTION_ID ? '' : this.currentConversation.sessionId
       payload.params.inputs.cookie = document.cookie
       payload.params.inputs.domain_name = this.prefix
       payload.params.elnSessionId = window.$cookies.get('eln_session_id') || ''
@@ -537,21 +472,119 @@ export default {
         this.currentConversation.messages = []
       }
       this.currentConversation.messages.push(newMessage)
-      this.tbcSSE.sendSSE(processedPayload)
+      this.currentConversation.abortController = new AbortController()
+      fetchEventSource(processedPayload.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(processedPayload.params),
+        signal: this.currentConversation.abortController.signal,
+
+        // 连接打开时回调, 解决重复请求问题，传递onopen参数
+        onopen(response) {
+          if (response.ok) {
+            return // everything's good
+          } else if (response.status !== 200) {
+            throw new FatalError()
+          } else {
+            throw new RetriableError()
+          }
+        },
+        // 收到事件时调用
+        onmessage: (event) => {
+          event = this.executeInterceptors('sseResInterceptors', 'onmessage', event)
+          let data, lastMessage, currentMessageConversationId, currentMessageConversation
+          try {
+            data = JSON.parse(event.data)
+          } catch (error) {
+            data = event.data
+          }
+          console.log(`🚀 ~ data:`, data)
+          if (data.event === 'message') {
+            // FIXME: 由于自定义返回div导致数据格式不统一，没有conversation_id导致报错，正常应该只保留下一行
+            console.log(`🚀 ~ data.conversation_id:`, data.conversation_id)
+            currentMessageConversationId = data.conversation_id
+            // FIXME:如果没有conversation_id，使用当前会话id,需要处理,防止报错的临时写法
+            if (!currentMessageConversationId) {
+              currentMessageConversationId = this.currentSessionId
+            }
+            if (
+              currentMessageConversationId &&
+              this.currentSessionId === APP_NEW_SESSTION_ID &&
+              this.newSesstionId !== APP_NEW_SESSTION_ID
+            ) {
+              this.currentSessionId = currentMessageConversationId
+              this.currentConversation.sessionId = currentMessageConversationId
+              this.newSesstionId = APP_NEW_SESSTION_ID
+              this.conversations.push(this.currentConversation)
+            } else {
+              currentMessageConversation = this.conversations.find(
+                (item) => item.sessionId === currentMessageConversationId,
+              )
+              // FIXME:如果没有conversation_id，使用当前会话id,需要处理,防止报错的临时写法
+              if (!currentMessageConversation) {
+                currentMessageConversation = this.conversations.find((item) => item.sessionId === APP_NEW_SESSTION_ID)
+              }
+              if (currentMessageConversation) {
+                lastMessage = currentMessageConversation.messages[currentMessageConversation.messages.length - 1]
+                lastMessage.answer += data.answer || ' '
+              }
+            }
+          } else if (data.event === 'message_end' || data.event === 'workflow_finished') {
+            currentMessageConversationId = data.conversation_id
+            currentMessageConversation = this.conversations.find(
+              (item) => item.sessionId === currentMessageConversationId,
+            )
+            if (currentMessageConversation) {
+              lastMessage = currentMessageConversation.messages[currentMessageConversation.messages.length - 1]
+            }
+            if (lastMessage) {
+              lastMessage.isGenerating = false
+            }
+          } else {
+            // console.log('未知事件类型:', data.event)
+          }
+        },
+        // 连接关闭时调用
+        onclose: () => {
+          this.currentConversation.abortController = null
+          this.currentConversation.messages.forEach((item) => {
+            if (item.isGenerating) {
+              item.isGenerating = false
+            }
+          })
+        },
+
+        // 请求发生错误时调用
+        onerror: (error) => {
+          console.error('发生错误:', error)
+          this.currentConversation.abortController = null
+          this.currentConversation.messages.forEach((item) => {
+            if (item.isGenerating) {
+              item.isGenerating = false
+            }
+          })
+          // 这里抛出错误，fetchEventSource 会自动尝试重连
+          throw error
+        },
+        openWhenHidden: true,
+        headersTimeout: processedPayload.timeout,
+      })
     },
     changeSession({ sessionId }) {
       if (sessionId === this.currentSessionId) {
         return
       }
-      // 关闭当前会话的SSE请求
-      this.stopSendMsg()
-      // 取消当前会话的请求
       this.cancelRequest()
       this.showMiniConversations = false
       this.currentSessionId = sessionId
       this.newSesstionId = APP_NEW_SESSTION_ID
       this.currentConversation = this.conversations.find((item) => item.sessionId === sessionId)
-      this.getConversationMessages()
+      const currentIsGenerating = this.currentConversation.messages?.some((item) => item.isGenerating)
+      if (!currentIsGenerating) {
+        this.getConversationMessages()
+      }
     },
     getConversationMessages() {
       const params = {
