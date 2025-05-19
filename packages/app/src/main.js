@@ -9,7 +9,7 @@ import TbcAiApp from './core'
 
 if (process.env.NODE_ENV === 'development') {
   window.$cookies.set('corp_code', 'lyv4')
-  window.$cookies.set('eln_session_id', 'elnSessionId.573d74aa3b7f4b7cacee2f5359e3d1a2')
+  window.$cookies.set('eln_session_id', 'elnSessionId.e669d1072a4c42a78bf4f92877ad9eb0')
 
   // 开发模式下，body margin 0
   document.body.style.margin = '0'

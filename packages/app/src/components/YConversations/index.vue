@@ -73,18 +73,23 @@ export default {
     },
   },
   computed: {
-    // 将 conversations 数组转换为按日期分组的对象
     conversationGroup() {
-      return this.conversations.reduce((acc, conversation) => {
+      const group = this.conversations.reduce((acc, conversation) => {
         const date = new Date(conversation.createTime)
         const dateString = date.toISOString().split('T')[0]
         if (!acc[dateString]) {
           acc[dateString] = []
         }
-        acc[dateString].push(conversation) // 先正常 push
+        acc[dateString].push(conversation)
         acc[dateString].sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
         return acc
       }, {})
+      const sortedKeys = Object.keys(group).sort((a, b) => new Date(b) - new Date(a))
+      const sortedGroup = {}
+      sortedKeys.forEach(key => {
+        sortedGroup[key] = group[key]
+      })
+      return sortedGroup
     },
   },
   methods: {
