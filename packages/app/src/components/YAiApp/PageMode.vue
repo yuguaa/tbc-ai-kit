@@ -20,7 +20,12 @@
           <div class="y-layout-sidebar-header y-shrink-0 y-px-20">
             <div class="y-mt-20 y-flex y-items-center y-justify-between y-text-[16px]">
               <span>AI智能助手</span>
-              <svg-icon class="y-cursor-pointer y-text-[20px]" icon-class="leftside" @click="closeSiderbar"></svg-icon>
+              <svg-icon
+                v-if="modeConfig.showHeaderSiderbarIcon"
+                class="y-cursor-pointer y-text-[20px]"
+                icon-class="leftside"
+                @click="closeSiderbar"
+              ></svg-icon>
             </div>
             <div
               class="y-mt-20 y-flex y-cursor-pointer y-items-center y-rounded-[8px] y-border y-border-solid y-border-borderDark y-bg-white y-px-16 y-py-[7px] y-text-secondText y-transition-all y-duration-300 hover:y-shadow-custom"
@@ -56,7 +61,7 @@
           >
             <div class="y-flex y-items-center y-gap-12" v-if="modeConfig.isFullMode">
               <template v-if="!modeConfig.isShowSidebar">
-                <span class="y-p-4">
+                <span v-if="modeConfig.showHeaderSiderbarIcon" class="y-p-4">
                   <svg-icon class="y-cursor-pointer" icon-class="leftside" @click="openSiderbar"></svg-icon>
                 </span>
                 <y-popper
@@ -77,7 +82,7 @@
               <span>AI智能助手</span>
             </div>
             <div class="y-flex y-items-center y-gap-20">
-              <span class="y-p-4">
+              <span class="y-p-4" v-if="modeConfig.showHeaderMoreIcon">
                 <svg-icon class="y-cursor-pointer" icon-class="more"></svg-icon>
               </span>
               <y-popper
@@ -132,6 +137,7 @@
                 </div>
               </div>
               <div
+                v-if="modeConfig.useSender"
                 class="y-box-border"
                 :class="modeConfig.isFullMode ? 'y-pb-20' : 'y-px-20  y-pb-20'"
                 :style="getMessagesStyle"
@@ -285,7 +291,10 @@ export default {
     },
   },
   mounted() {
-    this.getConversations()
+    this.cb && this.cb(this)
+    if (this.modeConfig.showHeaderSiderbarIcon || this.modeConfig.isShowSidebar) {
+      this.getConversations()
+    }
   },
   methods: {
     createSource() {
@@ -504,7 +513,7 @@ export default {
             // FIXME: 由于自定义返回div导致数据格式不统一，没有conversation_id导致报错，正常应该只保留下一行
             console.log(`🚀 ~ data.conversation_id:`, data.conversation_id)
             currentMessageConversationId = data.conversation_id
-            
+
             if (
               currentMessageConversationId &&
               this.currentSessionId === APP_NEW_SESSTION_ID &&

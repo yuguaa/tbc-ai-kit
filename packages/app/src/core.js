@@ -15,6 +15,7 @@ import {
 import { gainChatDomain } from '@/api'
 class TbcAiApp {
   vm = null // Vue 实例，视图展示
+  pageApp = null // 页面实例
   modeConfig = {} // 模式配置
   apiConfig = {} // API 配置
   sseReqInterceptors = [] // 请求拦截器
@@ -22,7 +23,7 @@ class TbcAiApp {
   apiReqInterceptors = [] // 请求拦截器
   apiResInterceptors = [] // 响应拦截器
   prefix = '' // 域名
-  constructor({ target, modeConfig = {}, apiConfig = {}, conversationApiConfig }) {
+  constructor({ target, modeConfig = {}, apiConfig = {}, conversationApiConfig }, cb) {
     if (!target) {
       const app = document.createElement('div')
       app.id = APP_DEFAULT_TARGET_DOM
@@ -41,6 +42,7 @@ class TbcAiApp {
           modeConfig: this.modeConfig,
           setModeConfig: this.setModeConfig.bind(this),
           setModeConfigItem: this.setModeConfigItem.bind(this),
+          setPageApp: this.setPageApp.bind(this),
           apiConfig: this.apiConfig,
           prefix: this.prefix,
           sseReqInterceptors: this.sseReqInterceptors,
@@ -49,6 +51,7 @@ class TbcAiApp {
           apiResInterceptors: this.apiResInterceptors,
           conversationApi: this.conversationApi,
           conversationApiConfig: this.conversationApiConfig,
+          cb,
         }
         this.vm = new Vue({
           data() {
@@ -98,6 +101,10 @@ class TbcAiApp {
         this.vm.$data.modeConfig[key] = value
       }
     })
+  }
+  setPageApp(pageApp) {
+    console.log(`🚀 ~ pageApp:`, pageApp)
+    this.pageApp = pageApp
   }
 }
 

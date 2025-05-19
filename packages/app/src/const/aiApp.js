@@ -13,6 +13,10 @@ const AI_APP_PROPS = {
     type: Function,
     default: () => {},
   },
+  setPageApp: {
+    type: Function,
+    default: () => {},
+  },
   apiConfig: {
     type: Object,
     default: () => {},
@@ -44,6 +48,10 @@ const AI_APP_PROPS = {
     type: Object,
     default: () => {},
   },
+  cb:{
+    type: Function,
+    default: () => {},
+  }
 }
 const APP_MODE_MAP = {
   page: 'PageMode',
@@ -82,6 +90,8 @@ const DEFAULT_MODE_CONFIG = {
   showHeaderToggleScreenIcon: true,
   showHeaderAvatarIcon: true,
   showHeaderMoreIcon: true,
+  showHeaderSiderbarIcon: true,
+  useSender: true,
 }
 const DEFAULT_API_CONFIG = {
   params: {
